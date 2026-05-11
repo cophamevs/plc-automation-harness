@@ -8,6 +8,8 @@
 | `/debug-compile` | Fix compile errors in a loop (max 5 iterations) |
 | `/download-test` | Download to PLC/PLCSim → verify via S7.Net read/write |
 | `/modify-program` | Open existing project → explore → modify → recompile → save |
+| `/tag-management` | Create tag tables, add/update/export/import tags |
+| `/project-backup` | Save backup copy, compare with online PLC |
 
 ## Agents (type in Claude Code)
 | Command | Role | Scope |

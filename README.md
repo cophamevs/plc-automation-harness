@@ -28,11 +28,11 @@ tools for TIA Portal automation.
    ```
 
 3. Claude automatically loads `CLAUDE.md` and has access to:
-   - 5 skills (`/new-project`, `/scl-inject`, `/debug-compile`, `/download-test`, `/modify-program`)
+   - 7 skills (`/new-project`, `/scl-inject`, `/debug-compile`, `/download-test`, `/modify-program`, `/tag-management`, `/project-backup`)
    - 4 agents (`@scl-developer`, `@scl-debugger`, `@scl-reviewer`, `@plc-architect`)
    - 5 auto-loaded rules (SCL rules, safety, S7-1500/1200 compat, knowledge registry)
    - SCL language reference and patterns
-   - 20 annotated case examples
+   - 25 annotated case examples
 
 4. Ensure tiaportal-mcp is configured in `.claude/settings.json`
 

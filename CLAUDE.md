@@ -59,6 +59,8 @@ Use `/scl-inject` skill for the full guided workflow.
 - `/debug-compile` — Iterative repair loop for compile errors (max 5 iterations)
 - `/download-test` — Download to PLC/PLCSim, verify via S7.Net read/write
 - `/modify-program` — Open existing project, explore, modify, recompile, save
+- `/tag-management` — Create, configure, and manage PLC tag tables
+- `/project-backup` — Save backup copy, optionally compare with online PLC
 
 ## Agents (invoke with @agent-name)
 - `@scl-developer` — Generate production-ready SCL code
