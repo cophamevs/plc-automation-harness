@@ -9,8 +9,8 @@
 | pid-loop.md | PID_Compact usage, manual/auto mode, tuning | pid, temperature, control, tuning | 1500 |
 | batch-process.md | ISA-88 batch concepts: fill/heat/drain phases | batch, isa88, phase, recipe | Both |
 | valve-control.md | On/off valve with feedback, timeout, manual override | valve, control, feedback, solenoid, modulating | Both |
+| multi-plc-comm.md | S7 communication between PLCs via PUT/GET with handshake | communication, putget, s7comm, multi-plc, handshake | Both |
 
 ## Planned (not yet created)
-- **multi-plc-comm.md** — S7 communication between multiple PLCs (PUT/GET, I-Device)
 - **hmi-interface.md** — HMI data exchange patterns, screen navigation, alarm display
 - **profinet-diagnostics.md** — PROFINET device diagnostics, station failure handling
