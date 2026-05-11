@@ -30,6 +30,7 @@
 | errors/008-block-order-dependency.md | FB referenced before declaration in source | order, dependency, generate | Compile |
 | errors/009-optimized-access-conflict.md | S7_Optimized_Access blocks S7.Net read | optimized, access, s7net | Runtime |
 | errors/010-s7-1200-unsupported-type.md | VARIANT/LREAL used on S7-1200 target | 1200, variant, lreal, compat | Compile |
+| errors/012-db-size-exceeded.md | DB size exceeds S7-1200 16 KB limit | 1200, db-size, limit, memory, data-block | Compile |
 
 ## Planned Cases (not yet created)
 **Success — Advanced:**
@@ -39,4 +40,4 @@
 
 **Error — Advanced:**
 - 011 — Communication timeout not handled (PUT/GET)
-- 012 — DB size exceeds S7-1200 16KB limit
+- ~~012 — DB size exceeds S7-1200 16KB limit~~ (done: errors/012-db-size-exceeded.md)
