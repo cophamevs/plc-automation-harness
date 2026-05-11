@@ -158,4 +158,4 @@ END_FUNCTION_BLOCK
 
 ## Related
 - `error-handling.md` — Handle communication errors gracefully
-- `../industry/modbus-tcp-client.md` — Complete MODBUS example
+- `../../case-db/success/008-modbus-tcp-client.md` — Complete MODBUS TCP example

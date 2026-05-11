@@ -125,4 +125,4 @@ Same as S7-1500 version — all timer/counter types are available on both.
 
 ## Related
 - `state-machine.md` — State machines use timers for timed transitions
-- `../industry/star-delta-starter.md` — Timer sequence for motor starting
+- `../../case-db/success/010-star-delta-starter.md` — Timer sequence for motor starting
