@@ -45,6 +45,19 @@ Expected:
 
 ---
 
+### Step 1b: Save a backup before modifying
+
+Before making changes, save a backup copy of the project:
+
+```
+SaveAsProject(path="<original_path>_backup_YYYYMMDD")
+```
+Expected: `{ "Success": true }`
+
+This creates a full copy so you can revert if modifications cause issues.
+
+---
+
 ### Step 2: Explore the project structure
 
 #### 2a. Get the project-level tree (PLCs, HMIs, drives)

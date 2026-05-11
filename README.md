@@ -10,14 +10,14 @@ patterns, annotated case databases, and step-by-step workflows that teach
 Claude Code how to program Siemens PLCs using SCL (Structured Control Language).
 
 It works with the [tiaportal-mcp](../tiaportal-mcp) MCP server which provides
-102 tools for TIA Portal automation.
+tools for TIA Portal automation.
 
 ## Quick Start
 
 1. Clone this repo alongside tiaportal-mcp:
    ```
    E:\Software_Siemens\
-   ├── tiaportal-mcp\           # MCP server (102 tools)
+   ├── tiaportal-mcp\           # MCP server (tools)
    └── plc-automation-harness\  # This repo (knowledge + agents)
    ```
 
@@ -45,8 +45,9 @@ It works with the [tiaportal-mcp](../tiaportal-mcp) MCP server which provides
 | `.claude/agents/` | 4 specialized agent definitions |
 | `knowledge/` | SCL reference, CPU specs, design patterns, industry examples |
 | `case-db/` | 10 success cases + 10 error cases for few-shot learning |
-| `workflows/` | Step-by-step procedures (reference copies) |
-| `prompts/` | Reusable prompt fragments |
+| `workflows/` | Quick-reference summaries pointing to skills (source of truth) |
+| `prompts/` | Legacy prompt fragments (see rules and agents for authoritative versions) |
+| `docs/` | Getting started, architecture, agents guide, cheat sheet |
 
 ## Extensible by Design
 

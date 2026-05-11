@@ -77,6 +77,5 @@ TIA Portal's `GenerateBlocksFromSource` compiles the external source file as a s
 - Check source file ordering: search for OB/DB before their referenced FB definitions
 
 ## Related
-- `knowledge/scl-block-structure.md` — mandatory block ordering
-- `knowledge/scl-best-practices.md` — source file layout convention
+- `.claude/rules/scl-rules.md` — block ordering: TYPE → FC → FB → DB → OB
 - `case-db/errors/002-missing-instance-db.md` — instance DB requirements

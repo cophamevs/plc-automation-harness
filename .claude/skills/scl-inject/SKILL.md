@@ -14,6 +14,21 @@ The primary workflow for getting SCL code into TIA Portal.
 
 ## Steps
 
+### Step 0: Clean up existing blocks if re-injecting
+
+If you are replacing blocks that already exist (re-injecting updated code), delete the old generated blocks first to avoid "block already exists" errors:
+
+```
+GetBlocks(softwarePath="<softwarePath>")
+```
+
+For each block that will be regenerated:
+```
+DeleteBlock(softwarePath="<softwarePath>", blockName="<blockName>")
+```
+
+Skip this step if injecting into a fresh project with no existing blocks.
+
 ### Step 1: Write SCL to external source
 
 ```

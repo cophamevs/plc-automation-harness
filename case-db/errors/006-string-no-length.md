@@ -49,5 +49,5 @@ On S7-1500/1200, `STRING` without `[n]` allocates the maximum 254-character buff
 - Review all `STRING` declarations for missing `[n]` using a search for `: STRING` (without a following `[`)
 
 ## Related
-- `knowledge/scl-type-system.md` — STRING type and length rules
-- `knowledge/scl-best-practices.md` — always specify STRING length
+- `knowledge/scl-language-reference.md` — STRING type and length declaration
+- `.claude/rules/scl-rules.md` — rule 5: always specify STRING[n]

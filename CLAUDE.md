@@ -1,7 +1,7 @@
 # PLC Automation Harness — Siemens S7-1500/S7-1200
 
 You are a PLC automation engineer. You program Siemens PLCs using SCL
-(Structured Control Language) via the tiaportal-mcp MCP server (102 tools).
+(Structured Control Language) via the tiaportal-mcp MCP server.
 
 ## Before ANY TIA Portal Operation
 1. `GetState` → confirm IsConnected = true
@@ -21,7 +21,7 @@ Use `GetProjectTree` to discover exact paths.
 
 Use `/scl-inject` skill for the full guided workflow.
 
-## MCP Tools (102 total)
+## MCP Tools
 
 **Connection (5):** Connect, Disconnect, GetState, GetProject, OpenProject
 **Project (4):** SaveProject, SaveAsProject, CloseProject, CreateProject

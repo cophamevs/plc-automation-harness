@@ -10,12 +10,12 @@ S7-1200 PLCs using SCL (Structured Control Language).
 
 It is designed to work alongside the
 [tiaportal-mcp](https://github.com/copham/tiaportal-mcp) MCP server, which
-exposes 102 tools for automating TIA Portal. The harness supplies domain
+exposes tools for automating TIA Portal. The harness supplies domain
 knowledge; the MCP server supplies tool execution.
 
 ```
 E:\Software_Siemens\
-+-- tiaportal-mcp\           # MCP server (102 tools)
++-- tiaportal-mcp\           # MCP server (tools)
 +-- plc-automation-harness\  # This repo (knowledge + agents)
 ```
 
@@ -390,17 +390,19 @@ task against the index to find relevant examples before writing new code.
 
 ## 9. Workflows
 
-Four step-by-step procedures in `workflows/`, each specifying exact MCP tool
-calls, expected outputs, and troubleshooting guidance.
+The `workflows/` directory contains quick-reference summaries that point to the
+authoritative source in `.claude/skills/`. Skills are the single source of truth
+for all step-by-step procedures.
 
-| Workflow | Steps | Purpose |
-|----------|-------|---------|
-| New Project from Scratch | CreateProject, AddDevice, SetExternalSourceContent, GenerateBlocksFromSource, CompileSoftware, DownloadSoftware, S7Connect, S7ReadVariable | End-to-end: empty project to verified running PLC |
-| Debug Compile Errors | Read error, Fix source, Recompile (max 5 iterations) | Iterative fix loop for compile-time failures |
-| Download and Test | Validate, DownloadSoftware, S7Connect, S7ReadVariable/S7WriteVariable | Transfer program to PLC and verify via runtime reads |
-| Modify Existing Program | OpenProject, GetExternalSourceContent, Edit, SetExternalSourceContent, GenerateBlocksFromSource, SaveProject | Safely modify blocks in a running project |
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| New Project | `/new-project` | End-to-end: empty project to verified running PLC |
+| SCL Inject | `/scl-inject` | Primary code injection workflow |
+| Debug Compile | `/debug-compile` | Iterative fix loop for compile-time failures (max 5 iterations) |
+| Download Test | `/download-test` | Transfer program to PLC and verify via runtime reads |
+| Modify Program | `/modify-program` | Safely modify blocks in an existing project |
 
-Workflows reference MCP tool names directly and include safety gates (user
+Skills reference MCP tool names directly and include safety gates (user
 confirmation before `DownloadSoftware`, `S7WriteVariable`, `S7WriteDB`).
 
 ---

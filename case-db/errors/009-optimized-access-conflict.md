@@ -56,6 +56,5 @@ TIA Portal's optimized DB layout packs variables for fastest PLC-internal access
 - MCP tool `S7ReadDB` will silently return wrong offsets for optimized DBs
 
 ## Related
-- `knowledge/s7net-integration.md` — S7.Net addressing and DB access
-- `knowledge/scl-best-practices.md` — always set S7_Optimized_Access := 'FALSE' for externally accessed DBs
-- `knowledge/mcp-tools-reference.md` — S7ReadVariable, S7ReadDB, S7ReadDBStruct usage
+- `knowledge/tia-openness-api.md` — S7 Runtime tools: S7ReadVariable, S7ReadDB, S7ReadDBStruct
+- `.claude/rules/s7-1500-features.md` — optimized DB access and S7_Optimized_Access setting

@@ -64,5 +64,5 @@ IEEE 754 single-precision floating-point (REAL in S7) cannot represent all decim
 - Search SCL source for `= <float literal>` or `<> <float literal>` patterns
 
 ## Related
-- `knowledge/scl-type-system.md` — REAL / IEEE 754 representation
-- `knowledge/scl-best-practices.md` — REAL comparison rule: always use epsilon
+- `knowledge/scl-language-reference.md` — REAL type and IEEE 754 representation
+- `.claude/rules/scl-rules.md` — rule 7: never use = for REAL, use epsilon

@@ -6,7 +6,7 @@
 - **TIA Version**: V19+
 
 ## Overview
-The tiaportal-mcp MCP server exposes 102 tools that wrap the Siemens TIA Portal
+The tiaportal-mcp MCP server exposes tools that wrap the Siemens TIA Portal
 Openness .NET API. This guide covers the tools most relevant to SCL development
 workflows.
 

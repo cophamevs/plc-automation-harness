@@ -31,15 +31,30 @@ cp case-db/errors/_template.md case-db/errors/011-my-error.md
 ```
 
 ### 5. New Workflow
-```bash
-cp workflows/_template.md workflows/my-workflow.md
-# Edit with Prerequisites, Steps (exact MCP tool calls), Troubleshooting
-# Add entry to workflows/_index.md
-```
+Workflows are maintained as skills in `.claude/skills/`. The `workflows/` directory
+contains quick-reference summaries pointing to the authoritative skill.
+
+To add a new workflow:
+1. Create `.claude/skills/my-skill/SKILL.md` with Prerequisites, Steps, Troubleshooting
+2. Add a summary entry to `workflows/_index.md` pointing to the skill
+3. Add the skill to the Skills section in `CLAUDE.md`
 
 ### 6. New Agent
-Create `.claude/agents/my-agent.md` with agent instructions.
-Add `/my-agent` to the Agents section in `CLAUDE.md`.
+Create `.claude/agents/my-agent.md` with the following structure:
+
+```markdown
+---
+description: One-line description of what the agent does
+tools: Comma-separated list of primary MCP tools used
+when_to_use: When should this agent be invoked
+---
+
+# Agent Name
+[Agent instructions, process, checklists, references]
+```
+
+The frontmatter is required — it helps Claude Code trigger the right agent.
+Add `@my-agent` to the Agents section in `CLAUDE.md`.
 
 ### 7. New Library Reference
 ```bash

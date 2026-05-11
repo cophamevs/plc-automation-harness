@@ -15,6 +15,8 @@ alwaysApply: true
 6. ARRAY indexes: S7 uses 1-based by default `ARRAY[1..10] OF INT`
 7. REAL comparison: never use `=`, use `ABS(a - b) < epsilon`
 8. ENO (Enable Output): check after every instruction that can fail
+9. Every FB MUST have `Error : BOOL` and `ErrorID : INT` outputs for diagnostics
+10. Block names MUST use standard prefixes: `OB_`, `FB_`, `FC_`, `DB_`, `UDT_`
 
 ## Block Ordering in External Sources
 When writing SCL for external source injection, blocks MUST appear in dependency order:
@@ -24,9 +26,9 @@ When writing SCL for external source injection, blocks MUST appear in dependency
 4. DATA_BLOCK (instance DBs)
 5. ORGANIZATION_BLOCK (OBs)
 
-## Block Naming Convention
-| Type | Prefix | Example | Numbering |
-|------|--------|---------|-----------|
+## Block Naming Convention (Mandatory)
+| Type | Prefix (MUST use) | Example | Numbering |
+|------|-------------------|---------|-----------|
 | OB | OB_ | OB_Main, OB_Startup | OB1, OB100 |
 | FB | FB_ | FB_MotorControl | FB1-FB999 |
 | FC | FC_ | FC_CalcPressure | FC1-FC999 |

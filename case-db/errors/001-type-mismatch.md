@@ -54,5 +54,5 @@ Look for compiler errors containing phrases like:
 These appear in the TIA Portal compile output panel on the offending assignment line.
 
 ## Related
-- `knowledge/scl-type-system.md` — full type conversion table
-- `knowledge/scl-best-practices.md` — rule: all type conversions must be explicit
+- `knowledge/scl-language-reference.md` — data types and conversion functions
+- `.claude/rules/scl-rules.md` — rule 4: always declare types explicitly

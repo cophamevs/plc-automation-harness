@@ -40,7 +40,11 @@ Generate production-ready SCL (Structured Control Language) code for S7-1500 and
    - `GenerateBlocksFromSource` to parse and create blocks
    - `CompileSoftware` to compile everything
 
-4. **Verify** -- Checks the compile result for errors. On success, calls `GetBlocks` to confirm all expected blocks exist. On failure, hands off to `@scl-debugger` or applies manual fixes.
+4. **Verify** -- Checks the compile result for errors. On success, calls `GetBlocks` to confirm all expected blocks exist. On failure, attempts one fix; if still failing, hands off to `@scl-debugger` for iterative repair.
+
+### Scope Boundary
+
+This agent **writes new code**. It does not enter multi-iteration debug loops — that is `@scl-debugger`'s job. If a compile error persists after one fix attempt, hand off.
 
 ### Key MCP Tools
 
@@ -75,9 +79,13 @@ a speed calculation FC, and the Main OB to tie it together.
 
 Diagnose and fix compile errors and runtime issues in Siemens S7 PLC programs. This agent operates as an automated fix loop -- it reads errors, applies corrections, recompiles, and repeats until the program compiles cleanly or an iteration limit is reached.
 
+### Scope Boundary
+
+This agent **fixes existing code**. It does not write new programs from scratch — that is `@scl-developer`'s job. Entry points: compile failure, generation failure, or runtime misbehavior.
+
 ### When to Use
 
-- `CompileSoftware` or `GenerateBlocksFromSource` returned errors
+- `CompileSoftware` or `GenerateBlocksFromSource` returned errors (especially after `@scl-developer`'s one-attempt fix failed)
 - Runtime values read via `S7ReadVariable` are unexpected (stuck at zero, wrong values)
 - Timers or counters are not behaving as expected
 - Block inconsistency errors after modifying dependencies
@@ -152,11 +160,13 @@ Review SCL code for quality, safety, IEC 61131-3 compliance, and S7-1200 compati
 
 ### Output Format
 
-Findings are reported per item using three severity levels:
+Each checklist item has a severity weight: **CRITICAL** (must fix before download), **MAJOR** (should fix), **MINOR** (recommended). Findings are reported per item:
 
 - **PASS** -- requirement met, no action needed
-- **WARN** -- potential issue, recommendation provided
-- **FAIL** -- must fix before deployment
+- **WARN** -- potential issue, recommendation provided (typically MINOR/MAJOR items)
+- **FAIL** -- must fix before deployment (typically CRITICAL items)
+
+The review summary groups all CRITICAL failures first, then MAJOR, then MINOR.
 
 ### Key MCP Tools
 
@@ -213,6 +223,15 @@ The architect delivers a block diagram as a structured table:
 | DB_Config | DB | Configuration | global read |
 
 Along with interface definitions (parameter names, types, and data flow descriptions) and design rationale.
+
+### Handoff to Implementation
+
+After design approval, hand off to `@scl-developer` with:
+1. The block diagram table
+2. Target CPU (S7-1500 or S7-1200)
+3. Any special requirements (S7_Optimized_Access, communication, safety)
+
+For complex systems, have the developer implement one FB at a time and use `@scl-reviewer` after each.
 
 ### Design Rules
 

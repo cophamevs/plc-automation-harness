@@ -59,6 +59,6 @@ END_FUNCTION_BLOCK
 - Check in Watch Table: `#delayTimer.ET` resets to 0 each scan instead of counting up
 
 ## Related
-- `knowledge/scl-timers.md` — TON/TOF/TP usage and memory requirements
-- `knowledge/scl-best-practices.md` — rule: timers/counters always in VAR (static)
+- `knowledge/patterns/timer-counter.md` — TON/TOF/TP patterns and memory requirements
+- `.claude/rules/scl-rules.md` — timers must be in VAR (static), not VAR_TEMP
 - `case-db/errors/002-missing-instance-db.md` — related static-state pattern

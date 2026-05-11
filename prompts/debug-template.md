@@ -1,5 +1,9 @@
 # Debug Context Template
 
+> **Note:** The debug process is now defined in `.claude/agents/scl-debugger.md`
+> and `.claude/skills/debug-compile/SKILL.md`. This template remains useful for
+> structuring error handoff between agents.
+
 Use this template when reporting an error to the user or when switching
 from scl-developer to scl-debugger agent.
 

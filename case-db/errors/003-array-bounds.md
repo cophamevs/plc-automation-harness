@@ -61,5 +61,5 @@ TIA Portal SCL arrays can be declared with any lower bound, but the convention f
 - S7ReadVariable or S7ReadDB may return 0 or stale data for the out-of-range element
 
 ## Related
-- `knowledge/scl-arrays.md` — array declaration and indexing conventions
-- `knowledge/scl-best-practices.md` — always guard dynamic array indices
+- `knowledge/scl-language-reference.md` — ARRAY declaration and 1-based indexing
+- `.claude/rules/scl-rules.md` — rule 6: S7 uses 1-based arrays

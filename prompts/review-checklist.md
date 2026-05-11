@@ -1,5 +1,9 @@
 # SCL Code Review Checklist
 
+> **Note:** The authoritative version is in `.claude/agents/scl-reviewer.md`
+> which includes severity weighting (CRITICAL/MAJOR/MINOR). This file is kept
+> as a quick-reference subset.
+
 Quick self-review after generating SCL code. Check each item.
 
 ## Structure

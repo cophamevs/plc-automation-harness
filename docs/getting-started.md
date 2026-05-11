@@ -7,7 +7,7 @@ The harness is a markdown-only knowledge ecosystem. It contains no executable
 code -- just structured knowledge files, agent definitions, design patterns,
 annotated case databases, and step-by-step workflows that teach Claude Code
 how to act as a PLC automation engineer. All actual TIA Portal automation
-happens through the tiaportal-mcp MCP server, which provides 102 tools.
+happens through the tiaportal-mcp MCP server, which provides tools.
 
 ---
 
@@ -33,7 +33,7 @@ Place both repositories side by side under the same parent directory:
 
 ```
 E:\Software_Siemens\
-├── tiaportal-mcp\           # MCP server (102 tools)
+├── tiaportal-mcp\           # MCP server (tools)
 └── plc-automation-harness\  # This repo (knowledge + agents)
 ```
 
@@ -69,9 +69,10 @@ Open `.claude/settings.json` in the harness directory:
 }
 ```
 
-Verify that:
+**Important:** The `command` path is hardcoded to the author's machine. You MUST
+update it to match your local setup. Verify that:
 
-1. The `command` path points to your actual built executable.
+1. The `command` path points to your actual built `TiaMcpServer.exe`.
 2. The `--tia-major-version` argument matches your TIA Portal version (`19` or `20`).
 
 If your paths differ, edit the file to match your setup. For example, if you
@@ -115,7 +116,7 @@ Inside Claude Code, type:
 ```
 
 You should see `tiaportal-mcp` listed as a connected MCP server with its
-102 tools available. If the server is not listed or shows as disconnected,
+tools available. If the server is not listed or shows as disconnected,
 see the Troubleshooting section below.
 
 ### 3c. Test basic connectivity
@@ -242,6 +243,22 @@ Agents are specialized personas with domain-specific knowledge:
 | **SCL Debugger** | `@scl-debugger` | Diagnose and fix compile/runtime errors (7-step debug loop) |
 | **SCL Reviewer** | `@scl-reviewer` | Review code quality, safety, IEC 61131-3 compliance (30-item checklist) |
 | **PLC Architect** | `@plc-architect` | Design program architecture and block decomposition |
+
+### Agent pipeline
+
+For complex projects, agents form a natural pipeline:
+
+```
+@plc-architect  →  @scl-developer  →  @scl-reviewer
+  (design)          (implement)        (quality check)
+                        ↓ error?
+                    @scl-debugger
+                    (iterative fix)
+```
+
+- `@plc-architect` produces a block diagram → hand off to `@scl-developer`
+- `@scl-developer` writes code, attempts 1 fix if compile fails → hand off to `@scl-debugger` if still failing
+- `@scl-reviewer` audits the final code with a severity-weighted checklist (CRITICAL/MAJOR/MINOR)
 
 ### When to use which
 
@@ -485,10 +502,8 @@ as disconnected.
 
 ## Next Steps
 
-- Read through `CLAUDE.md` to understand all the rules Claude follows when
-  writing SCL code.
-- Browse the case database (`case-db/success/`) to see complete working
-  examples.
+- See `docs/cheat-sheet.md` for a one-page quick reference of all skills, agents, rules, and commands.
+- Browse the case database (`case-db/success/`) to see complete working examples.
 - Try modifying an existing project using the `/modify-program` skill.
 - Add your own patterns and industry examples to grow the knowledge base.
 - See `CONTRIBUTING.md` for detailed contribution guidelines.

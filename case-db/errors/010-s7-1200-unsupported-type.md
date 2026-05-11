@@ -70,6 +70,6 @@ The VARIANT data type (introduced for S7-1500 and SCL structured programming) al
 - Review checklist item: "S7-1200: No VARIANT, LREAL, LINT, ULINT, LWORD"
 
 ## Related
-- `knowledge/s7-1200-constraints.md` — full list of S7-1200 type and feature restrictions
-- `knowledge/scl-best-practices.md` — CPU compatibility checklist
+- `knowledge/s7-1200-limitations.md` — full list of S7-1200 type and feature restrictions
+- `.claude/rules/s7-1200-compat.md` — S7-1200 compatibility rules and workarounds
 - `prompts/review-checklist.md` — S7-1200 section

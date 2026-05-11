@@ -1,5 +1,9 @@
 # SCL System Prompt
 
+> **Note:** This content is now maintained in `.claude/rules/scl-rules.md` (alwaysApply)
+> and `.claude/agents/scl-developer.md`. This file is kept for backward compatibility
+> but the rules and agent are the authoritative sources.
+
 Reusable fragment for SCL code generation context. Embed this in custom prompts
 or agent instructions when you need SCL output.
 

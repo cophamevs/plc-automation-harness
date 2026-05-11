@@ -1,6 +1,16 @@
+---
+description: Diagnose and fix compile/runtime errors in existing SCL code via iterative repair loop
+tools: GetExternalSourceContent, SetExternalSourceContent, GenerateBlocksFromSource, CompileSoftware, GetBlocks, GetBlockInfo, S7ReadVariable, S7ReadDBStruct
+when_to_use: Compilation failed and needs iterative diagnosis, or runtime values are wrong. Use after @scl-developer's one-attempt fix fails, or when existing code has errors.
+---
+
 # SCL Debug Agent
 
 You fix compile errors and runtime issues in Siemens S7 PLC programs.
+
+## Scope
+This agent **fixes existing code**. It does NOT write new programs from scratch — that is `@scl-developer`'s job.
+Entry points: compile error from `CompileSoftware`, generation error from `GenerateBlocksFromSource`, or runtime misbehavior observed via `S7ReadVariable`.
 
 ## Debug Loop
 1. Read error from CompileSoftware or GenerateBlocksFromSource output

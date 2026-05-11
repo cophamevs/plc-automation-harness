@@ -49,6 +49,5 @@ Compiler output contains:
 Also seen when a `DATA_BLOCK` is declared but comes *after* the OB in the source — reorder so DBs appear before OBs (see error 008).
 
 ## Related
-- `knowledge/scl-block-structure.md` — instance DB rules
+- `.claude/rules/scl-rules.md` — rule 2: every FB must have instance DB
 - `case-db/errors/008-block-order-dependency.md` — ordering DBs before OBs
-- `knowledge/scl-best-practices.md` — mandatory instance DB pattern

@@ -51,5 +51,5 @@ In TIA Portal SCL, the `#` prefix is mandatory for all local block variables (VA
 - Search the generated SCL for unqualified identifiers (no `#`, no DB-dot notation, no system namespace)
 
 ## Related
-- `knowledge/scl-variable-scoping.md` — # prefix rules and scope hierarchy
-- `knowledge/scl-best-practices.md` — always prefix local variables
+- `knowledge/scl-language-reference.md` — variable scoping and # prefix rules
+- `.claude/rules/scl-rules.md` — SCL syntax quick reference
