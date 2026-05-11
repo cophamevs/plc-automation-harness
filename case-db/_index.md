@@ -16,6 +16,9 @@
 | success/008-modbus-tcp-client.md | MODBUS TCP read/write to external device | modbus, tcp, communication | Both | Advanced |
 | success/009-data-logger.md | Ring buffer data logging to DB | logging, buffer, timestamp | Both | Intermediate |
 | success/010-star-delta-starter.md | Star-delta motor start sequence with timers | motor, star-delta, timer | Both | Intermediate |
+| success/011-multi-plc-comm.md | S7 communication between PLCs with handshake | putget, s7, handshake, comm | Both | Advanced |
+| success/012-multi-fb-system.md | Multi-FB system with error propagation | multi-fb, error, hierarchy | Both | Advanced |
+| success/013-valve-sequence.md | Valve sequencing with interlock logic | valve, sequence, interlock | Both | Advanced |
 
 ## Error Cases
 | File | Description | Tags | Error Type |
@@ -33,12 +36,3 @@
 | errors/011-comm-timeout.md | Communication timeout not handled (PUT/GET) | communication, timeout, putget, error-handling | Runtime |
 | errors/012-db-size-exceeded.md | DB size exceeds S7-1200 16 KB limit | 1200, db-size, limit, memory, data-block | Compile |
 
-## Planned Cases (not yet created)
-**Success — Advanced:**
-- 011 — Multi-PLC S7 communication with handshake
-- 012 — Complex multi-FB system with error propagation
-- 013 — Valve sequencing with interlock logic
-
-**Error — Advanced:**
-- ~~011 — Communication timeout not handled (PUT/GET)~~ (done: errors/011-comm-timeout.md)
-- ~~012 — DB size exceeds S7-1200 16KB limit~~ (done: errors/012-db-size-exceeded.md)

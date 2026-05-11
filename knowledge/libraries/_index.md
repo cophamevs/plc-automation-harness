@@ -4,11 +4,7 @@
 
 | File | Description | Tags | CPU |
 |------|-------------|------|-----|
-
-No libraries documented yet. Candidates for future addition:
-
-- **OSCAT Basic** — 500+ IEC 61131-3 function blocks (math, string, datetime, building automation)
-- **LGF** — Siemens Library of General Functions (utilities, diagnostics, standard operations)
-- **LSim** — Siemens Simulation library for virtual commissioning
+| lgf.md | Siemens Library of General Functions — scaling, ramp, debounce, pulse | lgf, siemens, utility, general | Both |
+| oscat.md | OSCAT Basic — 500+ open-source IEC 61131-3 blocks (math, string, datetime) | oscat, open-source, math, string | Both |
 
 To add a library: copy `_template.md`, fill in content, add an entry to this table.
