@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-11
 **Type:** Comprehensive audit + improvement roadmap
-**Status:** Fixes applied, roadmap for remaining work
+**Status:** Roadmap implemented — all P1 and P2 items complete
 
 ---
 
@@ -14,14 +14,14 @@ commit `17e09c7`.
 
 ### Scores
 
-| Layer | Before | After | Description |
-|-------|--------|-------|-------------|
-| 1. Foundation | 4.0 | 4.5 | CLAUDE.md, rules, settings |
-| 2. Knowledge | 3.5 | 4.0 | References, patterns, industry, cases |
-| 3. Workflows | 4.0 | 4.5 | Skills, workflow procedures |
-| 4. Agents | 3.5 | 4.5 | 4 specialized agents |
-| 5. DX | 4.0 | 4.5 | Docs, extensibility, onboarding |
-| **Overall** | **3.8** | **4.4** | |
+| Layer | Before | After Audit | After Roadmap | Description |
+|-------|--------|-------------|---------------|-------------|
+| 1. Foundation | 4.0 | 4.5 | 4.5 | CLAUDE.md, rules, settings |
+| 2. Knowledge | 3.5 | 4.0 | 4.8 | References, patterns, industry (8), cases (25), libraries (2) |
+| 3. Workflows | 4.0 | 4.5 | 5.0 | 7 skills (added tag-management, project-backup) |
+| 4. Agents | 3.5 | 4.5 | 4.5 | 4 specialized agents |
+| 5. DX | 4.0 | 4.5 | 4.7 | Docs, extensibility, onboarding |
+| **Overall** | **3.8** | **4.4** | **4.7** | |
 
 ---
 
