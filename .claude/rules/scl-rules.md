@@ -35,6 +35,50 @@ When writing SCL for external source injection, blocks MUST appear in dependency
 | DB | DB_ | DB_Config, DB_Recipe | DB1-DB999 |
 | UDT | UDT_ | UDT_MotorData | - |
 
+## Device Configuration (Mandatory for ALL PLCs)
+After adding a device, configure these settings before compiling or downloading:
+
+| Setting | Value | Why |
+|---------|-------|-----|
+| PUT/GET communication | **Enabled** | Required for S7.Net runtime access and inter-PLC communication |
+| Protection & Security → Access level | **Full access (no protection)** | Allows S7.Net read/write without authentication |
+| Protection & Security → Password | **Disabled (empty)** | Prevents download/access blocks |
+| System and clock memory bytes | **Enabled** (assign to free MB, e.g. MB0/MB1) | Required for system diagnostics, clock pulses |
+| DB block access | **Optimized** (default) | Better performance; set `S7_Optimized_Access := 'FALSE'` only on FBs that need S7.Net direct access |
+
+> When using `AddDevice` with `configureForSimulation=true`, these are set automatically.
+> For real hardware, configure manually in TIA Portal Device & Networks or via the MCP tools.
+
+## Tag Management Rules
+11. NEVER use absolute addresses (`%I0.0`, `%Q0.0`, `%M10.0`) directly in SCL source
+12. ALWAYS create named PLC tags FIRST via `CreateTag`, then reference by tag name in SCL
+13. Using absolute addresses causes TIA Portal to auto-generate ugly tag names like `Tag__639141118790971718`
+
+**Correct workflow:**
+```
+// Step 1: Create tags via MCP
+CreateTag(tableName="ValveTags", tagName="CmdOpen", dataType="Bool", address="%M10.0")
+CreateTag(tableName="ValveTags", tagName="FbkOpen", dataType="Bool", address="%M11.0")
+
+// Step 2: Use tag NAMES in SCL (not addresses)
+"DB_Valve1"(
+    CmdOpen := "CmdOpen",    // ← tag name, NOT %M10.0
+    FbkOpen := "FbkOpen",    // ← tag name, NOT %M11.0
+    ...
+);
+```
+
+## External Source Compilation Rules
+When generating blocks from external source files:
+
+| Rule | Detail |
+|------|--------|
+| OB VAR_TEMP >= 20 bytes | Pad with `pad : ARRAY[0..18] OF BYTE` if needed |
+| `S7_Optimized_Access` pragma on FB | Instance DBs inherit from FB, not from the DB pragma |
+| No TITLE with pragma | Remove TITLE line when using `{ S7_Optimized_Access := 'FALSE' }` |
+| M0/M1 reserved | System/clock memory — use M10+ for user data |
+| No %I/%Q without HW modules | Use M bits for PLCSim-only testing |
+
 ## SCL Syntax Quick Reference
 ```
 // Data types

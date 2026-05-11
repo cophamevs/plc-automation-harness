@@ -17,6 +17,29 @@ description: Download compiled program to PLC/PLCSim and verify via S7.Net read/
 
 ## Steps
 
+### Step 0: Check PLCSim instances (simulation only)
+
+Before downloading, always check existing PLCSim instances to avoid IP conflicts.
+
+```
+PlcSimGetInstances()
+```
+
+**If instances exist**, check their state:
+```
+PlcSimGetState(instanceName="<name>")
+```
+
+| Situation | Action |
+|-----------|--------|
+| Instance with **matching IP** and **Running** | Use it — proceed to Step 1 |
+| Instance with **same IP** but wrong CPU | Create new instance with **different IP**, update TIA Portal device via `SetDeviceAddress`, recompile |
+| No instances | Create one via `PlcSimCreateInstance`, then `PlcSimStart` |
+
+> **Never create a PLCSim instance with an IP that's already in use by another instance.** Either reuse the existing one or pick a different IP and update the device configuration in TIA Portal to match.
+
+---
+
 ### Step 1: Validate end-to-end readiness
 
 ```

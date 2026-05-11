@@ -34,6 +34,17 @@ GetProject()      → confirm project is open
 GetProjectTree()  → find softwarePath (e.g. PLC_1/Program blocks)
 ```
 
+## Device Config (after AddDevice)
+| Setting | Value |
+|---------|-------|
+| PUT/GET communication | Enabled |
+| Access level | Full access (no protection) |
+| Protection password | Disabled |
+| System/clock memory | Enabled (MB0/MB1) |
+| DB access | Optimized (default) |
+
+> `configureForSimulation=true` sets all of these automatically.
+
 ## SCL Code Injection (4 commands)
 ```
 SetExternalSourceContent(softwarePath, sourceName, content)
@@ -49,7 +60,7 @@ GetBlocks(softwarePath)  → verify
 4. DATA_BLOCK (instance DBs)
 5. ORGANIZATION_BLOCK (OBs)
 
-## Top 10 SCL Rules
+## Top 12 SCL Rules
 1. Always SCL — never LAD/FBD unless requested
 2. Every FB needs an instance DB
 3. No global variables inside FBs — use IN/OUT/INOUT
@@ -60,6 +71,17 @@ GetBlocks(softwarePath)  → verify
 8. Check ENO after fallible instructions
 9. Every FB: `Error : BOOL` + `ErrorID : INT` outputs
 10. Prefixes: `FB_`, `FC_`, `DB_`, `UDT_`, `OB_`
+11. NEVER use `%I`/`%Q`/`%M` addresses directly in SCL — create named tags first via `CreateTag`
+12. OB VAR_TEMP must be >= 20 bytes — pad with `pad : ARRAY[0..18] OF BYTE`
+
+## Before Download — PLCSim Check
+```
+PlcSimGetInstances()           → list existing instances
+PlcSimGetState(instanceName)   → check IP and state
+```
+- If existing instance has **same IP** → reuse it
+- If IP conflict → create new instance with **different IP** + `SetDeviceAddress` to match
+- Never create two instances with the same IP
 
 ## Safety — Confirm Before Calling
 | Tool | Risk |

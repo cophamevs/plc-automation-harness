@@ -82,8 +82,13 @@ Expected:
 }
 ```
 
-> `configureForSimulation=true` sets the interface to the PLCSim loopback adapter.  
-> Set `configureForSimulation=false` and adjust `ipAddress` for real hardware.
+> `configureForSimulation=true` auto-configures: PUT/GET communication, full access (no protection), system/clock memory bytes, optimized DB access, and PLCSim adapter.  
+> For real hardware: set `configureForSimulation=false`, adjust `ipAddress`, and manually configure these device settings:
+> - **PUT/GET communication**: Enabled (Properties → Protection & Security)
+> - **Access level**: Full access, no protection
+> - **Protection password**: Disabled (empty)
+> - **System/clock memory bytes**: Enabled (assign to free MB addresses)
+> - **DB access**: Optimized (default); use `S7_Optimized_Access := 'FALSE'` pragma on FBs that need S7.Net direct access
 
 ---
 
@@ -97,9 +102,34 @@ Record this value — it is required for all subsequent tool calls.
 
 ---
 
-### Step 5: Write SCL source and generate blocks
+### Step 5: Create PLC tags BEFORE writing SCL
 
-#### 5a. Write (or replace) the external source file
+> **IMPORTANT:** Never use absolute addresses (`%I0.0`, `%M10.0`) directly in SCL.
+> Always create named tags first, then reference them by name in the SCL source.
+> Using absolute addresses causes TIA Portal to auto-generate ugly tag names like `Tag__639141118790971718`.
+
+#### 5a. Create a tag table
+
+```
+CreateTagTable(softwarePath="PLC_1/PLC_1", tableName="ProcessTags")
+```
+
+#### 5b. Create tags for all I/O points used in the program
+
+```
+CreateTag(softwarePath="PLC_1/PLC_1", tableName="ProcessTags",
+  tagName="CmdOpen", dataType="Bool", address="%M10.0", comment="Open command")
+CreateTag(softwarePath="PLC_1/PLC_1", tableName="ProcessTags",
+  tagName="FbkOpen", dataType="Bool", address="%M11.0", comment="Open feedback")
+```
+
+Repeat for every I/O tag. Use meaningful names that match the FB interface.
+
+---
+
+### Step 6: Write SCL source and generate blocks
+
+#### 6a. Write (or replace) the external source file
 
 ```
 SetExternalSourceContent(
@@ -117,7 +147,7 @@ Replace `content` with the full SCL source. The source should contain all requir
 4. DATA_BLOCK (instance DBs)
 5. ORGANIZATION_BLOCK (OBs)
 
-#### 5b. Generate blocks from the source
+#### 6b. Generate blocks from the source
 
 ```
 GenerateBlocksFromSource(
@@ -130,7 +160,7 @@ If this fails, fix the SCL syntax before proceeding.
 
 ---
 
-### Step 6: Compile the software
+### Step 7: Compile the software
 
 ```
 CompileSoftware(softwarePath="PLC_1/Program blocks")
@@ -145,30 +175,63 @@ Expected:
 
 ---
 
-### Step 7: Start PLCSim (simulation path only)
+### Step 8: PLCSim setup (simulation path only)
 
-Skip this step if downloading to real hardware (go to Step 8).
+Skip this step if downloading to real hardware (go to Step 9).
 
-#### 7a. Create a PLCSim instance
+#### 8a. Check for existing PLCSim instances FIRST
+
+```
+PlcSimGetInstances()
+```
+
+**If instances exist:** check their IPs and states.
+```
+PlcSimGetState(instanceName="<existing_name>")
+```
+
+| Situation | Action |
+|-----------|--------|
+| Existing instance has **same IP** as your device and is **Running** | Use it — skip to Step 9 |
+| Existing instance has **same IP** but **wrong CPU type** | Create new instance with **different IP** (e.g. 192.168.0.11), then update device IP in TIA Portal via `SetDeviceAddress` to match |
+| No existing instances | Create a new one (Step 8b) |
+
+> **IMPORTANT:** If a PLCSim instance already occupies your target IP, do NOT create another instance with the same IP. Either reuse it or pick a different IP and update the TIA Portal device configuration to match.
+
+#### 8b. Create a new PLCSim instance (if needed)
 
 ```
 PlcSimCreateInstance(
   instanceName="PLC_1_Sim",
-  cpuType="S7-1500"
+  cpuType="1500",
+  ipAddress="192.168.0.10"
 )
 ```
 Expected: `{ "Success": true, "InstanceName": "PLC_1_Sim" }`
 
-#### 7b. Start the PLCSim instance
+#### 8c. Start the PLCSim instance
 
 ```
 PlcSimStart(instanceName="PLC_1_Sim")
 ```
 Expected: `{ "Success": true, "State": "Run" }`
 
+#### 8d. Verify PLCSim is reachable
+
+```
+PlcSimGetState(instanceName="PLC_1_Sim")
+```
+Expected: `operatingState: "Run"`. If state is "Stop", the instance is ready for download (CPU will go to RUN after download).
+
+> **If the instance IP doesn't match the TIA Portal device IP**, update the device:
+> ```
+> SetDeviceAddress(softwarePath="PLC_1/PLC_1", ipAddress="<plcsim_ip>")
+> ```
+> Then recompile before downloading.
+
 ---
 
-### Step 8: Configure online access
+### Step 9: Configure online access
 
 ```
 ConfigOnlineAccess(
@@ -184,7 +247,7 @@ or an actual network adapter name for real hardware.
 
 ---
 
-### Step 9: Download, connect via S7, verify, and disconnect
+### Step 10: Download, connect via S7, verify, and disconnect
 
 > **Confirm with the user before downloading to real hardware.** Downloading overwrites the PLC program and may affect running machinery.
 
