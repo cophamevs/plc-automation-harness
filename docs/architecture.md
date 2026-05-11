@@ -30,10 +30,13 @@ system described below.
 
 ### Claude Code Native
 
-The entire system is activated by Claude Code loading `CLAUDE.md` at session
-start. No build step, no plugin installation, no runtime dependency beyond the
-Claude CLI itself and the tiaportal-mcp MCP server. The `CLAUDE.md` file is the
-single entry point that bootstraps all knowledge.
+The system is activated by Claude Code loading three layers at session start:
+1. `CLAUDE.md` — lean root prompt (~74 lines) with tool categories and pointers
+2. `.claude/rules/` — auto-loaded rules (SCL rules, safety are `alwaysApply: true`)
+3. `.claude/settings.json` — MCP server connection
+
+No build step, no plugin installation, no runtime dependency beyond the Claude
+CLI itself and the tiaportal-mcp MCP server.
 
 ### Registry-Based Extensibility
 
@@ -56,17 +59,20 @@ trivially extensible by non-programmers.
 Knowledge is organized from broad to narrow:
 
 ```
-CLAUDE.md                    # Root: programming rules, tool categories
-  knowledge/_index.md        # Core references (SCL syntax, CPU specs)
-    knowledge/patterns/      # Reusable SCL design patterns
-    knowledge/industry/      # Domain-specific application examples
-    knowledge/libraries/     # Third-party function block libraries
-  case-db/_index.md          # Annotated input/output examples
-  workflows/_index.md        # Step-by-step procedures
+CLAUDE.md                        # Root: tool categories, pointers
+  .claude/rules/ (alwaysApply)   # SCL rules, safety — auto-loaded
+  .claude/rules/ (on-demand)     # S7-1500, S7-1200, knowledge registry
+  .claude/skills/                # Guided workflows via /skill-name
+  .claude/agents/                # Specialized personas via @agent-name
+  knowledge/_index.md            # Core references (SCL syntax, CPU specs)
+    knowledge/patterns/          # Reusable SCL design patterns
+    knowledge/industry/          # Domain-specific application examples
+    knowledge/libraries/         # Third-party function block libraries
+  case-db/_index.md              # Annotated input/output examples
 ```
 
-Claude reads the most general layer first (CLAUDE.md), then drills into
-specific registries and files only when the current task demands it.
+Claude loads `CLAUDE.md` + alwaysApply rules first, then activates skills
+or agents on demand, drilling into knowledge registries when the task requires.
 
 ---
 
@@ -80,11 +86,23 @@ plc-automation-harness/
 |-- README.md                         # Project overview and quick start
 |
 |-- .claude/
+|   |-- rules/
+|   |   |-- scl-rules.md              # Mandatory SCL rules (alwaysApply)
+|   |   |-- safety.md                 # Safety-critical warnings (alwaysApply)
+|   |   |-- s7-1500-features.md       # S7-1500 features (on-demand)
+|   |   |-- s7-1200-compat.md         # S7-1200 restrictions (on-demand)
+|   |   +-- knowledge-registry.md     # How to discover knowledge (on-demand)
+|   |-- skills/
+|   |   |-- new-project/SKILL.md      # /new-project — full E2E workflow
+|   |   |-- scl-inject/SKILL.md       # /scl-inject — code injection
+|   |   |-- debug-compile/SKILL.md    # /debug-compile — error repair loop
+|   |   |-- download-test/SKILL.md    # /download-test — download + verify
+|   |   +-- modify-program/SKILL.md   # /modify-program — modify existing
 |   |-- agents/
-|   |   |-- scl-developer.md          # /scl-developer agent
-|   |   |-- scl-debugger.md           # /scl-debugger agent
-|   |   |-- scl-reviewer.md           # /scl-reviewer agent
-|   |   +-- plc-architect.md          # /plc-architect agent
+|   |   |-- scl-developer.md          # @scl-developer agent
+|   |   |-- scl-debugger.md           # @scl-debugger agent
+|   |   |-- scl-reviewer.md           # @scl-reviewer agent
+|   |   +-- plc-architect.md          # @plc-architect agent
 |   +-- settings.json                 # MCP server configuration
 |
 |-- knowledge/
@@ -202,13 +220,59 @@ workflows/_index.md
 
 ---
 
-## 5. Knowledge Layer
+## 5. Rules Layer
+
+The `.claude/rules/` directory contains context rules that Claude Code loads
+based on their frontmatter metadata.
+
+### alwaysApply Rules (loaded every session)
+
+| File | Purpose |
+|------|---------|
+| `scl-rules.md` | 8 mandatory SCL rules, block ordering, naming conventions, syntax reference |
+| `safety.md` | Safety warnings for DownloadSoftware, S7WriteVariable, S7WriteDB |
+
+### On-Demand Rules (loaded when relevant)
+
+| File | Purpose |
+|------|---------|
+| `s7-1500-features.md` | S7-1500 specific features (VARIANT, OOP, 64-bit types) |
+| `s7-1200-compat.md` | S7-1200 restrictions and workarounds table |
+| `knowledge-registry.md` | How to discover knowledge via _index.md registries |
+
+Rules use YAML frontmatter with `alwaysApply: true/false` and a `description`
+field that Claude Code matches against the current conversation context.
+
+---
+
+## 6. Skills Layer
+
+The `.claude/skills/` directory contains guided workflows invokable via
+`/skill-name` in Claude Code. Each skill is a subdirectory with a `SKILL.md`
+file containing YAML frontmatter (`name`, `description`) and the full
+step-by-step procedure.
+
+| Skill | Command | Steps | Purpose |
+|-------|---------|-------|---------|
+| New Project | `/new-project` | 9 | Full E2E: create project, add device, SCL, compile, simulate, download, verify |
+| SCL Inject | `/scl-inject` | 4 | Write SCL to external source, generate blocks, compile, verify |
+| Debug Compile | `/debug-compile` | 5 | Iterative repair loop (max 5 iterations) with error reference table |
+| Download Test | `/download-test` | 6 | Validate, download, S7Connect, read/write verify |
+| Modify Program | `/modify-program` | 5 | Open, explore, export/modify, recompile, save |
+
+Skills differ from agents: skills are procedural (follow these steps), agents
+are behavioral (adopt this persona). Skills load the full workflow into context
+when invoked; agents carry specialized knowledge and decision-making rules.
+
+---
+
+## 7. Knowledge Layer
 
 The `knowledge/` directory contains reference material organized into four
 tiers: core references, design patterns, industry examples, and library
 documentation.
 
-### 5.1 Core References
+### 7.1 Core References
 
 Four files at the top level of `knowledge/` provide foundational information.
 
@@ -236,7 +300,7 @@ Covers the API concepts that map to MCP tool categories: project management,
 hardware configuration, software compilation, block import/export, and online
 operations.
 
-### 5.2 Patterns
+### 7.2 Patterns
 
 Six reusable SCL design patterns in `knowledge/patterns/`, each containing
 a problem description, SCL implementation, usage example, and notes on CPU
@@ -251,7 +315,7 @@ compatibility.
 | Communication | PUT/GET, Open User Communication (TCP/UDP), MODBUS TCP, S7 communication |
 | Error Handling | ENO chain propagation, status word pattern, error aggregation across FB hierarchies |
 
-### 5.3 Industry Modules
+### 7.3 Industry Modules
 
 Four domain-specific application examples in `knowledge/industry/`, each
 containing requirements, block structure, complete SCL implementation, and
@@ -264,7 +328,7 @@ test procedures.
 | PID Loop | PID_Compact configuration, manual/auto mode switching, tuning guidance | 1500 only |
 | Batch Process | ISA-88 batch concepts: fill, heat, drain phases with recipe management | Both |
 
-### 5.4 Libraries
+### 7.4 Libraries
 
 The `knowledge/libraries/` directory is reserved for third-party function block
 library references (e.g., OSCAT, Siemens LGF). The registry and template are
@@ -272,14 +336,14 @@ in place; no library entries have been contributed yet.
 
 ---
 
-## 6. Case Database
+## 8. Case Database
 
 The `case-db/` directory contains 20 annotated examples organized into success
 cases and error cases. These serve as few-shot learning material: agents search
 the index by tags to find cases similar to the current task before generating
 new code.
 
-### 6.1 Success Cases (10)
+### 8.1 Success Cases (10)
 
 Each success case contains: requirements, complete SCL source code, MCP tool
 commands used, and a test procedure with expected results.
@@ -297,7 +361,7 @@ commands used, and a test procedure with expected results.
 | 009 | Data Logger (ring buffer to DB) | Intermediate | Both |
 | 010 | Star-Delta Starter (motor start sequence with timers) | Intermediate | Both |
 
-### 6.2 Error Cases (10)
+### 8.2 Error Cases (10)
 
 Each error case contains: the exact error message, the problematic code, the
 corrected code, and an explanation of why the error occurs.
@@ -315,7 +379,7 @@ corrected code, and an explanation of why the error occurs.
 | 009 | Optimized Access Conflict (S7_Optimized_Access blocks S7.Net read) | Runtime |
 | 010 | S7-1200 Unsupported Type (VARIANT/LREAL on S7-1200) | Compile |
 
-### 6.3 Case Format
+### 8.3 Case Format
 
 Cases follow a consistent structure enforced by `_template.md` files in each
 subdirectory. The `_index.md` at the case-db root lists all cases in two tables
@@ -324,7 +388,7 @@ task against the index to find relevant examples before writing new code.
 
 ---
 
-## 7. Workflows
+## 9. Workflows
 
 Four step-by-step procedures in `workflows/`, each specifying exact MCP tool
 calls, expected outputs, and troubleshooting guidance.
@@ -341,13 +405,13 @@ confirmation before `DownloadSoftware`, `S7WriteVariable`, `S7WriteDB`).
 
 ---
 
-## 8. Agents
+## 10. Agents
 
 Four specialized agents defined in `.claude/agents/`. Each is a Markdown file
 containing a system prompt, behavioral rules, and references to knowledge files.
 Users invoke them via slash commands in Claude Code.
 
-### /scl-developer
+### @scl-developer
 
 Primary code generation agent. Before writing code, it confirms the target CPU,
 checks the case database for similar programs, and plans the block structure.
@@ -356,7 +420,7 @@ It follows a strict process: plan blocks, write SCL in correct dependency order
 verify. Falls back to `/plc-architect` for complex programs and `/scl-debugger`
 on compile failure.
 
-### /scl-debugger
+### @scl-debugger
 
 Error resolution agent. Operates in a read-error, locate, fix, recompile loop
 with a maximum of 5 iterations. Contains an error code reference table mapping
@@ -364,7 +428,7 @@ common TIA Portal error patterns (syntax errors, semantic errors, runtime
 faults) to their causes and fixes. Reads the current source via MCP tools,
 applies corrections, and recompiles until zero errors remain.
 
-### /scl-reviewer
+### @scl-reviewer
 
 Code quality agent. Reviews SCL against a structured checklist covering four
 categories: structure (single responsibility, no global access, instance DBs),
@@ -373,7 +437,7 @@ type safety (explicit conversions, STRING lengths, VARIANT validation), and
 S7-1200 compatibility. Produces a pass/fail report with specific remediation
 for each finding.
 
-### /plc-architect
+### @plc-architect
 
 Program design agent. Given machine or process requirements, it decomposes
 functionality into FBs, defines interfaces (IN/OUT parameters), plans OB
@@ -384,7 +448,7 @@ mandatory Error/ErrorID outputs on every FB.
 
 ---
 
-## 9. Prompts
+## 11. Prompts
 
 Three reusable prompt fragments in `prompts/`, designed to be embedded in
 custom prompts or agent instructions.
@@ -397,7 +461,7 @@ custom prompts or agent instructions.
 
 ---
 
-## 10. Extension Points
+## 12. Extension Points
 
 The harness is designed for growth. Each content type has a defined extension
 path.
@@ -453,7 +517,7 @@ path.
 
 ---
 
-## 11. Data Flow Summary
+## 13. Data Flow Summary
 
 The following describes how information flows during a typical session.
 
@@ -461,14 +525,14 @@ The following describes how information flows during a typical session.
 User opens Claude Code in plc-automation-harness/
   |
   v
-Claude loads CLAUDE.md (root system prompt)
-  |-- Programming rules (SCL syntax, naming, safety)
-  |-- Tool categories (102 MCP tools grouped by function)
-  |-- Safety gates (DownloadSoftware, S7WriteVariable require confirmation)
-  +-- Registry pointers (knowledge/, case-db/, workflows/)
+Claude loads CLAUDE.md + alwaysApply rules
+  |-- CLAUDE.md: tool categories, pointers (~74 lines)
+  |-- .claude/rules/scl-rules.md: 8 mandatory SCL rules (auto)
+  |-- .claude/rules/safety.md: safety-critical warnings (auto)
+  +-- .claude/settings.json: MCP server connection
   |
   v
-User invokes /scl-developer (or other agent)
+User invokes /new-project skill or @scl-developer agent
   |
   v
 Agent reads relevant _index.md registries
@@ -495,7 +559,7 @@ Optional: DownloadSoftware + S7Connect + verify via S7ReadVariable
 
 ---
 
-## 12. Relationship to tiaportal-mcp
+## 14. Relationship to tiaportal-mcp
 
 The harness and the MCP server are complementary but independent repositories.
 

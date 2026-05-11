@@ -9,7 +9,10 @@ Claude Code agents are specialized personas that you invoke within a Claude Code
 
 Agents do not share state with each other. Each invocation starts fresh. You can chain agents by passing the output of one as context to the next.
 
-This harness ships four agents purpose-built for Siemens S7 PLC development via TIA Portal MCP tools.
+This harness ships four agents purpose-built for Siemens S7 PLC development
+via TIA Portal MCP tools. Agents are complemented by five skills (invokable
+via `/skill-name`) that provide guided step-by-step workflows. See the
+Skills section at the end for how they interact.
 
 ---
 
@@ -260,19 +263,45 @@ The workflow is not always linear. Common loops include:
 
 ---
 
+## Skills vs Agents
+
+The harness provides both skills and agents. They serve different purposes:
+
+| Type | Invocation | Purpose | Example |
+|------|-----------|---------|---------|
+| **Skill** | `/skill-name` | Step-by-step procedure with exact tool calls | `/new-project`, `/debug-compile` |
+| **Agent** | `@agent-name` | Specialized persona with domain knowledge | `@scl-developer`, `@scl-reviewer` |
+
+**When to use skills:** You want a guided workflow — follow steps 1, 2, 3...
+**When to use agents:** You want an expert persona — describe what you need, it decides how.
+
+### Available Skills
+
+| Skill | Steps | Purpose |
+|-------|-------|---------|
+| `/new-project` | 9 | Full E2E: create project → download → verify |
+| `/scl-inject` | 4 | Write SCL → generate → compile → verify |
+| `/debug-compile` | 5 | Error repair loop (max 5 iterations) |
+| `/download-test` | 6 | Download + S7.Net verification |
+| `/modify-program` | 5 | Open → modify → recompile → save |
+
+---
+
 ## Tips
 
-### When to Use Agents vs the Base Session
+### When to Use Agents vs Skills vs Base Session
 
 | Situation | Use |
 |-----------|-----|
-| Writing new SCL code for TIA Portal | `@scl-developer` |
-| Fixing compile or runtime errors | `@scl-debugger` |
-| Auditing code quality or safety | `@scl-reviewer` |
-| Planning program structure from requirements | `@plc-architect` |
-| Quick one-off TIA Portal operations (read tags, check block list) | Base session |
-| General file editing, scripting, or non-PLC tasks | Base session |
-| Exploring what MCP tools are available | Base session |
+| Full project from scratch | `/new-project` skill |
+| Just inject SCL code | `/scl-inject` skill |
+| Complex program design | `@plc-architect` agent |
+| Writing new SCL code | `@scl-developer` agent |
+| Fixing compile errors | `/debug-compile` skill or `@scl-debugger` agent |
+| Code quality audit | `@scl-reviewer` agent |
+| Download and test | `/download-test` skill |
+| Quick one-off TIA Portal operations | Base session |
+| General file editing, non-PLC tasks | Base session |
 
 ### Combining Agents Effectively
 

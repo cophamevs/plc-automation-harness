@@ -28,10 +28,11 @@ It works with the [tiaportal-mcp](../tiaportal-mcp) MCP server which provides
    ```
 
 3. Claude automatically loads `CLAUDE.md` and has access to:
-   - 4 specialized agents (`/scl-developer`, `/scl-debugger`, `/scl-reviewer`, `/plc-architect`)
+   - 5 skills (`/new-project`, `/scl-inject`, `/debug-compile`, `/download-test`, `/modify-program`)
+   - 4 agents (`@scl-developer`, `@scl-debugger`, `@scl-reviewer`, `@plc-architect`)
+   - 5 auto-loaded rules (SCL rules, safety, S7-1500/1200 compat, knowledge registry)
    - SCL language reference and patterns
    - 20 annotated case examples
-   - 4 step-by-step workflows
 
 4. Ensure tiaportal-mcp is configured in `.claude/settings.json`
 
@@ -39,11 +40,13 @@ It works with the [tiaportal-mcp](../tiaportal-mcp) MCP server which provides
 
 | Directory | Contents |
 |-----------|----------|
+| `.claude/rules/` | 5 rules auto-loaded by Claude Code (SCL rules, safety, CPU compat) |
+| `.claude/skills/` | 5 skills invokable via `/skill-name` (workflows as skills) |
+| `.claude/agents/` | 4 specialized agent definitions |
 | `knowledge/` | SCL reference, CPU specs, design patterns, industry examples |
 | `case-db/` | 10 success cases + 10 error cases for few-shot learning |
-| `workflows/` | Step-by-step procedures (new project, debug, download, modify) |
+| `workflows/` | Step-by-step procedures (reference copies) |
 | `prompts/` | Reusable prompt fragments |
-| `.claude/agents/` | 4 specialized agent definitions |
 
 ## Extensible by Design
 

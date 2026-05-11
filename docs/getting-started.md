@@ -100,9 +100,11 @@ cd E:\Software_Siemens\plc-automation-harness
 claude
 ```
 
-When Claude Code starts, it automatically reads `CLAUDE.md` from the root
-directory. This file configures Claude as a PLC automation engineer and
-establishes all the rules for SCL programming, block naming, and MCP tool usage.
+When Claude Code starts, it automatically loads:
+- `CLAUDE.md` — lean root prompt with tool categories and pointers
+- `.claude/rules/scl-rules.md` — mandatory SCL programming rules (alwaysApply)
+- `.claude/rules/safety.md` — safety-critical operation warnings (alwaysApply)
+- `.claude/settings.json` — MCP server connection to tiaportal-mcp
 
 ### 3b. Verify the MCP connection
 
@@ -133,7 +135,8 @@ response confirming `IsConnected: true` and the TIA Portal version.
 ## 4. Your First Project
 
 This section walks through the end-to-end workflow for creating a PLC project
-from scratch. It follows the `workflows/new-project-from-scratch.md` workflow.
+from scratch. You can also invoke this as a skill: type `/new-project` in
+Claude Code to get the full guided workflow.
 
 Make sure TIA Portal is running before you start.
 
@@ -213,24 +216,41 @@ directly from the PLC memory.
 
 ---
 
-## 5. Using Agents
+## 5. Using Skills and Agents
 
-The harness includes four specialized agents, each tuned for a specific role.
-Invoke them from Claude Code with their slash command.
+The harness provides two types of specialized capabilities:
+
+### Skills (invoke with `/skill-name`)
+
+Skills are guided workflows that load full step-by-step procedures:
+
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| **New Project** | `/new-project` | Create project, add device, SCL, compile, simulate, download, verify (9 steps) |
+| **SCL Inject** | `/scl-inject` | Write SCL → generate blocks → compile (4 steps, primary code workflow) |
+| **Debug Compile** | `/debug-compile` | Iterative compile error repair loop (max 5 iterations) |
+| **Download Test** | `/download-test` | Download to PLC/PLCSim, verify via S7.Net read/write (6 steps) |
+| **Modify Program** | `/modify-program` | Open existing project, explore, modify, recompile, save (5 steps) |
+
+### Agents (invoke with `@agent-name`)
+
+Agents are specialized personas with domain-specific knowledge:
 
 | Agent | Command | Purpose |
 |-------|---------|---------|
-| **SCL Developer** | `/scl-developer` | Writes SCL code for S7-1500/S7-1200 PLCs. Plans block structures, generates external sources, and compiles. |
-| **SCL Debugger** | `/scl-debugger` | Fixes compile errors and runtime issues. Runs a read-error, fix-source, recompile loop (max 5 iterations). |
-| **SCL Reviewer** | `/scl-reviewer` | Reviews SCL code for quality, safety, and IEC 61131-3 compliance. Checks structure, type safety, and S7-1200 compatibility. |
-| **PLC Architect** | `/plc-architect` | Designs block structures for PLC programs. Decomposes requirements into FBs, FCs, DBs, and OBs with defined interfaces. |
+| **SCL Developer** | `@scl-developer` | Generate production-ready SCL code with block planning and injection |
+| **SCL Debugger** | `@scl-debugger` | Diagnose and fix compile/runtime errors (7-step debug loop) |
+| **SCL Reviewer** | `@scl-reviewer` | Review code quality, safety, IEC 61131-3 compliance (30-item checklist) |
+| **PLC Architect** | `@plc-architect` | Design program architecture and block decomposition |
 
-### When to use which agent
+### When to use which
 
-- Starting a new program from requirements: `/plc-architect` first to design the structure, then `/scl-developer` to implement it.
-- Code will not compile: `/scl-debugger` to diagnose and fix errors.
-- Code review before deployment: `/scl-reviewer` to check for safety issues, type problems, and S7-1200 compatibility.
-- Quick single-block task: `/scl-developer` directly.
+- Full project from scratch: `/new-project` skill
+- Just inject SCL code: `/scl-inject` skill
+- Complex program design: `@plc-architect` first, then `@scl-developer`
+- Code won't compile: `/debug-compile` skill or `@scl-debugger` agent
+- Code review before deployment: `@scl-reviewer`
+- Quick single-block task: `@scl-developer` directly
 
 ---
 
@@ -435,8 +455,7 @@ as disconnected.
 
 **Fixes:**
 1. Read the error messages in the compile output.
-2. Follow the `workflows/debug-compile-errors.md` workflow or invoke
-   `/scl-debugger`.
+2. Use `/debug-compile` skill or invoke `@scl-debugger` agent.
 3. Common causes: missing instance DBs, type mismatches, global variable
    access inside FBs.
 
@@ -470,7 +489,6 @@ as disconnected.
   writing SCL code.
 - Browse the case database (`case-db/success/`) to see complete working
   examples.
-- Try modifying an existing project using the `workflows/modify-existing-program.md`
-  workflow.
+- Try modifying an existing project using the `/modify-program` skill.
 - Add your own patterns and industry examples to grow the knowledge base.
 - See `CONTRIBUTING.md` for detailed contribution guidelines.
