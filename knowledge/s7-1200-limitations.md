@@ -124,6 +124,33 @@ BEGIN
 END_FUNCTION
 ```
 
+### DB Explosion Risk — Use Multi-Instance FB
+Each FB call with its own Instance DB consumes a DB slot and work memory.
+On S7-1200 with 150 KB work memory, 20+ independent FBs can exhaust memory.
+
+**Solution: Multi-instance FB** — declare child FBs inside the parent FB's `VAR` section.
+All children share the parent's single Instance DB:
+```scl
+FUNCTION_BLOCK "FB_ConveyorSystem"
+VAR
+  // Each child FB's memory lives inside this FB's Instance DB
+  inst_InfeedMotor  : "FB_MotorControl";  // no separate DB needed
+  inst_OutfeedMotor : "FB_MotorControl";  // no separate DB needed
+  inst_InfeedValve  : "FB_ValveControl";  // no separate DB needed
+END_VAR
+BEGIN
+  #inst_InfeedMotor(CmdStart := #StartCmd, ...);
+  #inst_OutfeedMotor(CmdStart := #StartCmd AND #inst_InfeedMotor.Running, ...);
+  #inst_InfeedValve(CmdOpen := #inst_InfeedMotor.Running, ...);
+END_FUNCTION_BLOCK
+// Only ONE Instance DB needed for the entire conveyor system
+```
+
+Symbolic access path: `"DB_Conveyor1".inst_InfeedMotor.Running`
+
+S7-1500 supports up to 16 nesting levels of multi-instances.
+S7-1200: respect the 6-level call nesting limit when designing the hierarchy.
+
 ### Max 16 KB per DB → Split Strategy
 ```scl
 // If you need 1000 records of 20 bytes each = 20 KB (exceeds 16 KB on 1200)

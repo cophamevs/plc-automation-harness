@@ -167,6 +167,7 @@ S7ReadVariable(address="DB1.DBX4.1") → Error (BOOL)
 3. Reset the state timer on every state transition (entry action pattern)
 4. Timeout protection in transitional states (STARTING, STOPPING) prevents hangs
 5. Global fault check BEFORE the CASE — ensures fault is caught regardless of current state
+6. **CASE outperforms long IF-ELSIF chains**: For state machines, `CASE #State OF` is evaluated in O(1) — the CPU jumps directly to the matching branch. A chain of `IF #State = 0 ... ELSIF #State = 1 ...` evaluates every condition top-down. With 10+ states this creates measurable scan-time jitter. Use CASE for any integer-selector branching with 3 or more branches.
 
 ## Related
 - `timer-counter.md` — Timer patterns used in state transitions

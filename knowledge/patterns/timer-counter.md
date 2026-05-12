@@ -122,6 +122,24 @@ Same as S7-1500 version — all timer/counter types are available on both.
 3. **TON vs TOF vs TP**: TON delays ON, TOF delays OFF, TP gives fixed pulse. Choose the right one.
 4. **Timer resolution**: TIME type has 1ms resolution. Minimum reliable timing ≈ scan cycle time.
 5. **Counter overflow**: CTU.CV is INT (max 32767). For large counts, use DINT variable with manual counting.
+6. **R_TRIG / F_TRIG must be called unconditionally**: Edge detection FBs track the previous input state in their Instance DB. If called inside an IF block, the CPU misses scans where the condition is FALSE — the edge is never detected or detected late. Always call R_TRIG/F_TRIG at the top of the FB, outside any condition:
+```scl
+VAR
+  inst_RisingEdge : R_TRIG;  // must be static
+END_VAR
+
+// ✅ CORRECT — call unconditionally every scan
+#inst_RisingEdge(CLK := #TriggerSignal);
+
+IF #inst_RisingEdge.Q THEN
+  // do work on rising edge
+END_IF;
+
+// ❌ WRONG — edge detection only runs when SomeCondition is TRUE
+IF #SomeCondition THEN
+  #inst_RisingEdge(CLK := #TriggerSignal);  // misses edges when SomeCondition = FALSE
+END_IF;
+```
 
 ## Related
 - `state-machine.md` — State machines use timers for timed transitions

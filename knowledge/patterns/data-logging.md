@@ -161,15 +161,75 @@ BEGIN
 END_FUNCTION
 ```
 
+### Pattern 3: FIFO Shift Register
+
+The FIFO (First-In-First-Out) pattern shifts data through an array — used for layer tracking
+in production lines, batch queues, and history buffers.
+
+#### The Cascading Bug (ascending FOR)
+```scl
+// ❌ WRONG — ascending FOR causes value cascade in one scan
+// When i=1: Layer[2] := Layer[1]  → Layer[2] = new value
+// When i=2: Layer[3] := Layer[2]  → Layer[3] = new value (not old Layer[2]!)
+// Result: NewValue fills ALL slots in a single scan cycle
+FOR #i := 1 TO 4 BY 1 DO
+  #Layer[#i + 1] := #Layer[#i];
+END_FOR;
+```
+
+#### Correct FIFO — Descending FOR + R_TRIG
+```scl
+FUNCTION_BLOCK "FB_FIFO_5Layer"
+VERSION : 0.1
+
+VAR_INPUT
+  NewValue      : INT;      // value to push
+  TriggerSignal : BOOL;     // rising edge = push new value
+END_VAR
+
+VAR_OUTPUT
+  Layer         : ARRAY[1..5] OF INT;  // Layer[1]=newest, Layer[5]=oldest
+END_VAR
+
+VAR
+  // R_TRIG MUST be static — it tracks the previous state of TriggerSignal
+  inst_Trig : R_TRIG;
+END_VAR
+
+VAR_TEMP
+  temp_i : INT;
+END_VAR
+
+BEGIN
+  // Call R_TRIG unconditionally — outside any IF block
+  #inst_Trig(CLK := #TriggerSignal);
+
+  IF #inst_Trig.Q THEN
+    // ✅ Descending FOR: shift from bottom up to avoid cascading
+    FOR #temp_i := 5 TO 2 BY -1 DO
+      #Layer[#temp_i] := #Layer[#temp_i - 1];
+    END_FOR;
+    // Insert new value at top
+    #Layer[1] := #NewValue;
+  END_IF;
+END_FUNCTION_BLOCK
+```
+
+> For more than 5 layers or large arrays (up to 65535 elements), use **LGF_FIFO**
+> from the Siemens Library of General Functions instead of custom SCL.
+
 ### S7-1200 Variant
 Ring buffer: reduce ARRAY size if DB exceeds 16 KB. 100 entries × ~12 bytes = ~1.2 KB → fits.
 Recipe DB: 10 recipes × ~50 bytes = ~500 bytes → fits easily.
+FIFO: same pattern works; reduce layer count if memory is tight.
 
 ## Gotchas
 1. **Ring buffer overflow**: WriteIndex wraps around — old data is overwritten
 2. **S7-1200 DB size**: Calculate array size × entry size. Stay under 16 KB.
 3. **NON_RETAIN**: Log data is lost on PLC restart. Use RETAIN if persistence needed.
 4. **Timestamp**: Use TIME system variable or real-time clock for meaningful timestamps
+5. **FIFO cascading**: FOR ascending overwrites all elements in one scan. Always use descending (`BY -1`) when shifting array data toward higher indices.
+6. **R_TRIG placement in FIFO**: Call `R_TRIG` unconditionally at the top of the FB body, not inside the IF block — otherwise edge detection misses cycles when the trigger condition isn't active.
 
 ## Related
 - `../industry/batch-process.md` — Recipes used in batch operations

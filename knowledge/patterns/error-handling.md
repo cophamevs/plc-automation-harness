@@ -168,6 +168,36 @@ Same as S7-1500 — ENO and error patterns work identically on both.
 3. **Consistent interface**: Use the same Done/Busy/Error/ErrorID pattern on ALL FBs.
 4. **Error codes**: Define a table of error codes per FB. Document them.
 5. **BOOL_TO_INT**: Returns 0 or 1 — useful for counting errors.
+6. **ELSE clause must never be empty**: An empty ELSE is a silent failure. Every CASE and IF-ELSIF must handle the undefined case by activating a fail-safe action:
+```scl
+// ❌ WRONG — undefined state ignored silently
+CASE #LightState OF
+  10: #VehicleContinue := TRUE;
+  20: #VehicleSlowDown := TRUE;
+  30: #VehicleStop := TRUE;
+  ELSE
+    ;  // do nothing — dangerous!
+END_CASE;
+
+// ✅ CORRECT — ELSE triggers fail-safe
+CASE #LightState OF
+  10: #VehicleContinue := TRUE;
+  20: #VehicleSlowDown := TRUE;
+  30: #VehicleStop := TRUE;
+  ELSE
+    // Unknown/corrupted state → safe fallback
+    #VehicleContinue := FALSE;
+    #VehicleSlowDown := FALSE;
+    #VehicleStop := TRUE;    // default to stop (safe)
+    #Error := TRUE;
+    #ErrorID := 99;          // undefined state
+    #Alarm_Active := TRUE;
+END_CASE;
+```
+**ELSE fail-safe checklist:**
+- [ ] All outputs driven to a known safe state
+- [ ] Error flag set and ErrorID assigned
+- [ ] Alarm surfaced to HMI or diagnostic buffer
 
 ## Related
 - `alarm-management.md` — Alarms triggered by error conditions

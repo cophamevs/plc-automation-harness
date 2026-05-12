@@ -127,15 +127,22 @@ myChar := 'A';
 | ROR(IN, N) | Rotate right N bits | ROR(IN:=val, N:=1) |
 
 ### Operator Precedence (highest to lowest)
-1. `NOT`, `-` (unary negation)
-2. `**` (exponentiation)
-3. `*`, `/`, `MOD`
-4. `+`, `-`
-5. `<`, `>`, `<=`, `>=`
-6. `=`, `<>`
-7. `AND`, `&`
-8. `XOR`
-9. `OR`
+| Level | Operators | Notes |
+|-------|-----------|-------|
+| 1 | `( )` parentheses | Always use to clarify complex expressions |
+| 2 | `**` exponentiation | Right-associative |
+| 3 | `-` unary negation, `NOT` | Higher than multiply — `NOT a AND b` = `(NOT a) AND b` |
+| 4 | `*`, `/`, `MOD` | |
+| 5 | `+`, `-` | |
+| 6 | `<`, `>`, `<=`, `>=` | |
+| 7 | `=`, `<>` | |
+| 8 | `AND`, `&` | |
+| 9 | `XOR` | |
+| 10 | `OR` | Lowest logical |
+| 11 | `:=`, `+=`, `-=`, `*=`, `/=` | Assignment — lowest of all |
+
+> **Rule:** Always use explicit parentheses in mixed Boolean/arithmetic expressions.
+> `A OR B AND C` evaluates as `A OR (B AND C)` — not `(A OR B) AND C`.
 
 ---
 
@@ -572,6 +579,132 @@ Deserialize(SRC_ARRAY := #ByteArray,
 
 ---
 
+---
+
+## 10. Memory Classes: TEMP vs STATIC
+
+Understanding the difference is critical — choosing wrong is the #1 cause of stateless bugs.
+
+| Property | TEMP (VAR_TEMP) | STATIC (VAR) |
+|----------|-----------------|--------------|
+| **Location** | PLC system stack | Instance DB (work memory) |
+| **Persistence** | Lost when block exits | Retained across scan cycles |
+| **Initialization** | ⚠️ **Undefined / garbage** — must write before read | Retains previous value |
+| **Available in** | FB, FC, OB | FB only |
+| **Use for** | Loop counters `i`, intermediate math, transient flags | Timers, counters, state variables, PID integrals, shift registers |
+
+### The TEMP Memory Trap
+```scl
+// ❌ WRONG — #sum contains garbage on first scan
+VAR_TEMP
+  sum : REAL;
+END_VAR
+BEGIN
+  sum := sum + #NewValue;  // reads uninitialized value!
+
+// ✅ CORRECT — initialize before use
+VAR_TEMP
+  sum : REAL;
+END_VAR
+BEGIN
+  sum := 0.0;              // write first
+  sum := sum + #NewValue;
+```
+
+### What MUST be in VAR (static), never VAR_TEMP
+```scl
+VAR
+  // Timers — need memory across scans to track elapsed time
+  RunTimer   : TON_TIME;    // ✅ static
+  // Counters — need to retain count value
+  PartCtr    : CTU;         // ✅ static
+  // State machine step
+  State      : INT := 0;   // ✅ static
+  // Edge detection
+  PrevInput  : BOOL;        // ✅ static
+  // Accumulator
+  TotalFlow  : REAL;        // ✅ static
+END_VAR
+```
+
+> **Error 1102**: Timer or counter declared in FC VAR_TEMP → compile error.
+> FCs have no Instance DB, so they cannot hold persistent state.
+
+---
+
+## 11. Professional Best Practices
+
+### Naming Conventions
+| Prefix | Scope | Example |
+|--------|-------|---------|
+| `#` | Any local variable (mandatory) | `#stat_State`, `#temp_Sum` |
+| `stat_` | Static variable (FB VAR) | `#stat_RunTimer` |
+| `temp_` | Temporary variable (VAR_TEMP) | `#temp_i`, `#temp_Calc` |
+| `inst_` | Nested FB instance (Multi-instance) | `#inst_InfeedMotor` |
+| `DB_` | Data block | `DB_ConveyorControl` |
+| `FB_` | Function block | `FB_MotorControl` |
+| `FC_` | Function | `FC_ScaleAnalog` |
+| `UDT_` | User-defined type | `UDT_SensorData` |
+
+### FC vs FB Decision Matrix
+| Scenario | Block Type | Reason |
+|----------|-----------|--------|
+| Unit conversion, scaling | **FC** | Stateless calculation — no memory needed |
+| Boolean logic combination | **FC** | Stateless — output depends only on current inputs |
+| Motor / valve control | **FB** | Needs state, timers, run hours |
+| State machine | **FB** | State variable must persist between scans |
+| PID control | **FB** | Integral term persists between scans |
+| Any use of TON/TOF/CTU | **FB** | Timers require persistent (static) memory |
+
+### IF-ELSIF vs CASE
+```scl
+// ✅ Use CASE for integer selectors / state machines
+// CPU evaluates in O(1) — more efficient than IF chain
+CASE #State OF
+  0: #Output := FALSE;
+  1: #Output := TRUE;
+  2: #Output := FALSE;
+  ELSE
+    // ALWAYS include ELSE — catches undefined states
+    #FaultHandler := TRUE;
+    #Output := FALSE;  // fail-safe
+END_CASE;
+
+// ✅ Use IF-ELSIF for mutually exclusive conditions (non-integer selector)
+// CPU stops evaluating at first TRUE — don't use nested IF where ELSIF works
+IF #Temp > 100.0 THEN
+  #Zone := 3;
+ELSIF #Temp > 50.0 THEN
+  #Zone := 2;
+ELSIF #Temp > 20.0 THEN
+  #Zone := 1;
+ELSE
+  #Zone := 0;
+END_IF;
+```
+
+### Retain Attribute
+```scl
+// Variables that must survive power loss (recipes, setpoints, production counts)
+VAR RETAIN
+  TotalParts     : DINT := 0;   // production counter
+  RecipeIndex    : INT := 0;    // last active recipe
+  Setpoint_Speed : REAL := 100.0;
+END_VAR
+// Non-retain is default — use for runtime state (timers, steps)
+```
+
+### Optimized Block Access
+- **Default (TIA Portal V17+):** CPU uses symbolic addresses — faster, memory-aligned
+- **Trade-off:** Absolute addressing (`DB1.DBW4`) is disabled
+- **When to disable:** Only for DBs that need S7.Net / legacy SCADA absolute access:
+  ```scl
+  DATA_BLOCK "DB_SCADA_Interface"
+  { S7_Optimized_Access := 'FALSE' }  // enables absolute access for this DB only
+  ```
+
+---
+
 ## Key Points
 - SCL is case-insensitive for keywords but preserve case for readability
 - Every statement ends with semicolon `;`
@@ -581,6 +714,8 @@ Deserialize(SRC_ARRAY := #ByteArray,
 - No implicit type conversion — always use explicit conversion functions
 - Arrays are 1-based by default: `ARRAY[1..10]`
 - VERSION declaration required on every block
+- **TEMP vars contain garbage** — always write before read
+- **Timers/counters must be in VAR (static)** — never VAR_TEMP
 
 ## Related
 - `s7-1500.md` — S7-1500 specific features (VARIANT, OOP, 64-bit)
