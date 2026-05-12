@@ -4,7 +4,7 @@
 
 | File | Description | Tags | CPU |
 |------|-------------|------|-----|
-| scl-language-reference.md | Complete SCL syntax, data types, operators, control flow | scl, syntax, types, operators | Both |
+| scl-language-reference.md | Complete SCL syntax, data types, operators, control flow, TEMP vs STATIC memory classes, naming conventions, FC vs FB selection, Retain, Optimized Block Access | scl, syntax, types, operators, memory, temp, static, naming, best-practices | Both |
 | s7-1500.md | S7-1500 specific features: VARIANT, OOP, 64-bit types | 1500, variant, oop, lreal | 1500 |
 | s7-1200-limitations.md | S7-1200 restrictions vs S7-1500 with workarounds | 1200, limits, compatibility | 1200 |
 | tia-openness-api.md | TIA Portal Openness API guide for agent workflows | openness, api, mcp, tools | Both |

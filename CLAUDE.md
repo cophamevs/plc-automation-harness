@@ -71,6 +71,7 @@ Use `/scl-inject` skill for the full guided workflow.
 ## Knowledge (on-demand, via registries)
 When you need domain knowledge, read the relevant `_index.md` first:
 - `knowledge/_index.md` — SCL syntax, CPU specs, TIA Openness API
-- `knowledge/patterns/_index.md` — State machine, timers, comms, alarms, error handling
+- `knowledge/patterns/_index.md` — State machine, timers, FIFO, multi-instance FB, error handling
 - `knowledge/industry/_index.md` — Conveyor, motor, PID, batch process
-- `case-db/_index.md` — 10 success cases + 10 error cases with SCL code
+- `knowledge/libraries/_index.md` — LGF, OSCAT third-party function block libraries
+- `case-db/_index.md` — 13 success cases + 12 error cases with SCL code
