@@ -8,6 +8,7 @@
 | s7-1500.md | S7-1500 specific features: VARIANT, OOP, 64-bit types | 1500, variant, oop, lreal | 1500 |
 | s7-1200-limitations.md | S7-1200 restrictions vs S7-1500 with workarounds | 1200, limits, compatibility | 1200 |
 | tia-openness-api.md | TIA Portal Openness API guide for agent workflows | openness, api, mcp, tools | Both |
+| hardware-parameter-catalog.md | Local SQLite catalog strategy for TIA V19 hardware parameters when Openness API coverage is incomplete | openness, hardware, parameters, catalog, sqlite, v19 | Both |
 
 **Subdirectories:**
 - `patterns/` — Reusable SCL design patterns → see `patterns/_index.md`
