@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "tiaportal-mcp": {
+      "command": "C:\\path\\to\\tiaportal-mcp\\src\\TiaMcpServer\\bin\\Release\\net48\\TiaMcpServer.exe",
+      "args": [
+        "--tia-major-version",
+        "19"
+      ],
+      "env": {}
+    }
+  }
+}
