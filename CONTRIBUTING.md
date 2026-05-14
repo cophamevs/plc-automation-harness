@@ -1,5 +1,17 @@
 # Contributing to PLC Automation Harness
 
+## Codex + Markdown Hierarchy Rules
+
+When adding or changing content, keep this navigation model intact:
+
+1. Root docs (`AGENTS.md`, `CLAUDE.md`)
+2. Registry docs (`knowledge/_index.md`, `workflows/_index.md`, `case-db/_index.md`)
+3. Targeted content docs selected from registries
+4. Templates for new entries
+
+If you add a new markdown file and do not add it to the directory `_index.md`,
+it will not be discovered reliably by agents.
+
 ## Adding New Content
 
 ### 1. New Pattern
@@ -61,6 +73,12 @@ Add `@my-agent` to the Agents section in `CLAUDE.md`.
 cp knowledge/libraries/_template.md knowledge/libraries/my-library.md
 # Add entry to knowledge/libraries/_index.md
 ```
+
+## MCP Configuration Files
+
+- Keep `.mcp.json` local (untracked).
+- Use `.mcp.json.example` as the tracked template for repo users.
+- Do not commit machine-specific MCP executable paths outside templates/examples.
 
 ## Quality Checklist
 

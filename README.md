@@ -1,13 +1,13 @@
 # PLC Automation Harness
 
-A Claude Code knowledge ecosystem that transforms Claude into a Siemens
-S7-1500/S7-1200 PLC automation engineer.
+A knowledge ecosystem for Claude Code and Codex CLI that supports Siemens
+S7-1500/S7-1200 PLC automation workflows.
 
 ## What Is This?
 
 This repo contains markdown knowledge files, agent definitions, reusable
-patterns, annotated case databases, and step-by-step workflows that teach
-Claude Code how to program Siemens PLCs using SCL (Structured Control Language).
+patterns, annotated case databases, and step-by-step workflows for programming
+Siemens PLCs in SCL (Structured Control Language).
 
 It works with the [tiaportal-mcp](../tiaportal-mcp) MCP server which provides
 tools for TIA Portal automation.
@@ -21,25 +21,32 @@ tools for TIA Portal automation.
    └── plc-automation-harness\  # This repo (knowledge + agents)
    ```
 
-2. Open this directory in Claude Code:
+2. Configure MCP:
+   - For Codex CLI: copy `.mcp.json.example` to `.mcp.json` and update path/version.
+   - For Claude Code: update `.claude/settings.json` path/version.
+
+3. Open this directory in your client:
    ```bash
    cd E:\Software_Siemens\plc-automation-harness
-   claude
+   codex   # or: claude
    ```
 
-3. Claude automatically loads `CLAUDE.md` and has access to:
+4. Start with the right root doc:
+   - Codex CLI: `AGENTS.md`
+   - Claude Code: `CLAUDE.md`
+
+5. Core assets available in this repo:
    - 7 skills (`/new-project`, `/scl-inject`, `/debug-compile`, `/download-test`, `/modify-program`, `/tag-management`, `/project-backup`)
    - 4 agents (`@scl-developer`, `@scl-debugger`, `@scl-reviewer`, `@plc-architect`)
    - 5 auto-loaded rules (SCL rules, safety, S7-1500/1200 compat, knowledge registry)
    - SCL language reference and patterns
    - 25 annotated case examples
 
-4. Ensure tiaportal-mcp is configured in `.claude/settings.json`
-
 ## Structure
 
 | Directory | Contents |
 |-----------|----------|
+| `AGENTS.md` | Codex CLI operating guide and markdown navigation hierarchy |
 | `.claude/rules/` | 5 rules auto-loaded by Claude Code (SCL rules, safety, CPU compat) |
 | `.claude/skills/` | 5 skills invokable via `/skill-name` (workflows as skills) |
 | `.claude/agents/` | 4 specialized agent definitions |
@@ -62,7 +69,13 @@ See `CONTRIBUTING.md` for details.
 
 ## Requirements
 
-- Claude Code CLI
+- Codex CLI or Claude Code CLI
 - tiaportal-mcp MCP server
 - TIA Portal V19 or V20 (running)
 - Windows 10/11
+
+## Codex CLI Notes
+
+- Codex setup guide: `docs/codex-quickstart.md`
+- MCP template: `.mcp.json.example`
+- Local `.mcp.json` is machine-specific and should not be committed
