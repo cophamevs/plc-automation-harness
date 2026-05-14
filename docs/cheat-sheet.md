@@ -74,10 +74,13 @@ GetBlocks(softwarePath)  → verify
 11. NEVER use `%I`/`%Q`/`%M` addresses directly in SCL — create named tags first via `CreateTag`
 12. OB VAR_TEMP must be >= 20 bytes — pad with `pad : ARRAY[0..18] OF BYTE`
 
-## Before Download — PLCSim Check
+## Before Download — PLCSim Advanced Check (plcsimadv-mcp)
 ```
-PlcSimGetInstances()           → list existing instances
-PlcSimGetState(instanceName)   → check IP and state
+GetInstances()                      → list existing instances
+GetInstanceState(instanceName)      → check state (Off/Stop/Run)
+SetManagerConfig(networkMode="TCPIPSingleAdapter")  → before CreateInstance
+CreateInstance(instanceName, cpuType="1500", ipAddress)
+StartInstance(instanceName)
 ```
 - If existing instance has **same IP** → reuse it
 - If IP conflict → create new instance with **different IP** + `SetDeviceAddress` to match
@@ -89,8 +92,8 @@ PlcSimGetState(instanceName)   → check IP and state
 | `DownloadSoftware` | Overwrites PLC program |
 | `S7WriteVariable` | Writes to running PLC memory |
 | `S7WriteDB` | Writes raw bytes to data block |
-| `PlcSimStop` | Stops running simulation |
-| `PlcSimDeleteInstance` | Deletes simulation instance |
+| `StopInstance` (plcsimadv-mcp) | Stops running simulation |
+| `DeleteInstance` (plcsimadv-mcp) | Deletes simulation instance |
 
 ## S7-1200 Forbidden Features
 No VARIANT, LREAL, LINT, ULINT, LWORD, METHOD, PROPERTY, ARRAY[*].

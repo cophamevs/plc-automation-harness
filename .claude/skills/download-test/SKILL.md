@@ -19,22 +19,23 @@ description: Download compiled program to PLC/PLCSim and verify via S7.Net read/
 
 ### Step 0: Check PLCSim instances (simulation only)
 
-Before downloading, always check existing PLCSim instances to avoid IP conflicts.
+Before downloading, always check existing PLCSim Advanced instances to avoid IP conflicts.
+These tools are from the **`plcsimadv-mcp`** server.
 
 ```
-PlcSimGetInstances()
+GetInstances()
 ```
 
 **If instances exist**, check their state:
 ```
-PlcSimGetState(instanceName="<name>")
+GetInstanceState(instanceName="<name>")
 ```
 
 | Situation | Action |
 |-----------|--------|
-| Instance with **matching IP** and **Running** | Use it — proceed to Step 1 |
+| Instance with **matching IP** and state **Run** | Use it — proceed to Step 1 |
 | Instance with **same IP** but wrong CPU | Create new instance with **different IP**, update TIA Portal device via `SetDeviceAddress`, recompile |
-| No instances | Create one via `PlcSimCreateInstance`, then `PlcSimStart` |
+| No instances | Call `SetManagerConfig(networkMode="TCPIPSingleAdapter")`, then `CreateInstance`, then `StartInstance` |
 
 > **Never create a PLCSim instance with an IP that's already in use by another instance.** Either reuse the existing one or pick a different IP and update the device configuration in TIA Portal to match.
 
@@ -193,7 +194,7 @@ Always disconnect cleanly. Leaving a persistent S7 connection may block other cl
 | `DownloadSoftware` fails: "PLC not in STOP" | PLC is in RUN mode and download requires STOP | Put PLC in STOP via TIA Portal Online menu, or use `SetPlcState(state="Stop")` |
 | `DownloadSoftware` fails: "Consistency check error" | Hardware config or firmware mismatch | Ensure CPU typeIdentifier matches physical/simulated CPU; recheck `AddDevice` parameters |
 | `S7Connect` fails: "Connection refused" | Wrong IP or CPU type | Confirm IP in TIA Portal; for PLCSim use `"192.168.0.1"` (default) |
-| `S7Connect` fails after PLCSim download | PLCSim still in STOP after download | Start PLCSim RUN: `PlcSimStart(instanceName="PLC_1_Sim")` then retry `S7Connect` |
+| `S7Connect` fails after PLCSim download | PLCSim still in STOP after download | `StartInstance(instanceName="PLC_1_Sim")` (plcsimadv-mcp), then retry `S7Connect` |
 | `S7ReadVariable` returns wrong type | `dataType` parameter does not match DB field | Check DB declaration for correct data type; map SCL types to S7 addresses (BOOL->DBX, INT->DBW, DINT/REAL->DBD) |
 | `S7ReadVariable` value always 0 after write | PLC logic overwrites variable each cycle | This is correct behavior for output variables; test with a non-driven memory variable instead |
 | `S7WriteVariable` succeeds but no observable effect | Variable is an input (read-only from S7 perspective) or logic resets it | Use a dedicated test/debug DB or put PLC in STOP before writing |

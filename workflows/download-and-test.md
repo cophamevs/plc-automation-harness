@@ -171,7 +171,7 @@ Always disconnect cleanly. Leaving a persistent S7 connection may block other cl
 | `DownloadSoftware` fails: "PLC not in STOP" | PLC is in RUN mode and download requires STOP | Put PLC in STOP via TIA Portal Online menu, or use `SetPlcState(state="Stop")` |
 | `DownloadSoftware` fails: "Consistency check error" | Hardware config or firmware mismatch | Ensure CPU typeIdentifier matches physical/simulated CPU; recheck `AddDevice` parameters |
 | `S7Connect` fails: "Connection refused" | Wrong IP or CPU type | Confirm IP in TIA Portal; for PLCSim use `"192.168.0.1"` (default) |
-| `S7Connect` fails after PLCSim download | PLCSim still in STOP after download | Start PLCSim RUN: `PlcSimStart(instanceName="PLC_1_Sim")` then retry `S7Connect` |
+| `S7Connect` fails after PLCSim download | PLCSim still in STOP after download | `StartInstance(instanceName="PLC_1_Sim")` (plcsimadv-mcp), then retry `S7Connect` |
 | `S7ReadVariable` returns wrong type | `dataType` parameter does not match DB field | Check DB declaration for correct data type; map SCL types to S7 addresses (BOOL→DBX, INT→DBW, DINT/REAL→DBD) |
 | `S7ReadVariable` value always 0 after write | PLC logic overwrites variable each cycle | This is correct behavior for output variables; test with a non-driven memory variable instead |
 | `S7WriteVariable` succeeds but no observable effect | Variable is an input (read-only from S7 perspective) or logic resets it | Use a dedicated test/debug DB or put PLC in STOP before writing |

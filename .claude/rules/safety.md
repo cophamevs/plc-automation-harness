@@ -13,8 +13,8 @@ These MCP tools write to physical or simulated PLCs. ALWAYS confirm with the use
 | `DownloadSoftware` | Overwrites the PLC program — may stop running machinery | YES — always |
 | `S7WriteVariable` | Writes to running PLC memory — can affect process | YES — always |
 | `S7WriteDB` | Writes raw bytes to data block — can corrupt data | YES — always |
-| `PlcSimStop` | Stops a running simulation — may disrupt testing | YES — if tests are running |
-| `PlcSimDeleteInstance` | Deletes a simulation instance — loses runtime state | YES — always |
+| `StopInstance` (plcsimadv-mcp) | Stops a running simulation — may disrupt testing | YES — if tests are running |
+| `DeleteInstance` (plcsimadv-mcp) | Deletes a simulation instance — loses runtime state | YES — always |
 
 ## Rules
 1. NEVER call these tools without explicit user confirmation

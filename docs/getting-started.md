@@ -201,10 +201,11 @@ Start a PLCSim simulation for PLC_1 and download the program.
 ```
 
 Claude will:
-1. Create a PLCSim instance with `PlcSimCreateInstance`.
-2. Start it with `PlcSimStart`.
-3. Configure online access with `ConfigOnlineAccess`.
-4. Download the software with `DownloadSoftware`.
+1. Set TCP/IP mode with `SetManagerConfig(networkMode="TCPIPSingleAdapter")` (plcsimadv-mcp).
+2. Create a PLCSim instance with `CreateInstance` (plcsimadv-mcp).
+3. Start it with `StartInstance` (plcsimadv-mcp).
+4. Configure online access with `ConfigOnlineAccess` (tiaportal-mcp).
+5. Download the software with `DownloadSoftware` (tiaportal-mcp).
 
 ### Step 6: Verify via S7 runtime connection
 
@@ -482,7 +483,7 @@ as disconnected.
 
 **Fixes:**
 1. For simulation: make sure PLCSim Advanced is running and the instance is
-   started (`PlcSimStart`).
+   started — call `StartInstance(instanceName)` via plcsimadv-mcp.
 2. For real hardware: verify the PLC IP address matches the device configuration
    in the project. Check that the PLC is in STOP mode. Check Windows Firewall
    rules.

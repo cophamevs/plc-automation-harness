@@ -29,7 +29,7 @@ commit `17e09c7`.
 
 ### Layer 1: Foundation
 - Removed hardcoded "102 tools" count across 6 files (brittle if MCP server changes)
-- Expanded safety rule: added `PlcSimStop` and `PlcSimDeleteInstance`
+- Expanded safety rule: added `StopInstance` and `DeleteInstance` (plcsimadv-mcp)
 - Added 2 mandatory SCL rules: Error/ErrorID on every FB, block name prefixes MUST
 - Strengthened naming convention table language
 

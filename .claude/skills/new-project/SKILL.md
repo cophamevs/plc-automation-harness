@@ -175,53 +175,61 @@ Expected:
 
 ---
 
-### Step 8: PLCSim setup (simulation path only)
+### Step 8: PLCSim Advanced setup (simulation path only)
 
 Skip this step if downloading to real hardware (go to Step 9).
+
+These tools are from the **`plcsimadv-mcp`** server (not tiaportal-mcp).
 
 #### 8a. Check for existing PLCSim instances FIRST
 
 ```
-PlcSimGetInstances()
+GetInstances()
 ```
 
-**If instances exist:** check their IPs and states.
+**If instances exist:** check their state.
 ```
-PlcSimGetState(instanceName="<existing_name>")
+GetInstanceState(instanceName="<existing_name>")
 ```
 
 | Situation | Action |
 |-----------|--------|
-| Existing instance has **same IP** as your device and is **Running** | Use it — skip to Step 9 |
+| Existing instance has **same IP** as your device and state is **Run** | Use it — skip to Step 9 |
 | Existing instance has **same IP** but **wrong CPU type** | Create new instance with **different IP** (e.g. 192.168.0.11), then update device IP in TIA Portal via `SetDeviceAddress` to match |
 | No existing instances | Create a new one (Step 8b) |
 
 > **IMPORTANT:** If a PLCSim instance already occupies your target IP, do NOT create another instance with the same IP. Either reuse it or pick a different IP and update the TIA Portal device configuration to match.
 
-#### 8b. Create a new PLCSim instance (if needed)
+#### 8b. Enable TCP/IP mode and create a new instance (if needed)
 
 ```
-PlcSimCreateInstance(
+SetManagerConfig(networkMode="TCPIPSingleAdapter")
+```
+> **Must call this before `CreateInstance`** if TIA Portal needs to download via TCP/IP. Default mode is `Softbus` (internal only).
+
+```
+CreateInstance(
   instanceName="PLC_1_Sim",
   cpuType="1500",
   ipAddress="192.168.0.10"
 )
 ```
-Expected: `{ "Success": true, "InstanceName": "PLC_1_Sim" }`
+Expected: `{ "instanceName": "PLC_1_Sim", "ipAddress": "192.168.0.10" }`
+
+> `cpuType` values: `"1500"`, `"1516"`, `"1515"`.
 
 #### 8c. Start the PLCSim instance
 
 ```
-PlcSimStart(instanceName="PLC_1_Sim")
+StartInstance(instanceName="PLC_1_Sim")
 ```
-Expected: `{ "Success": true, "State": "Run" }`
 
 #### 8d. Verify PLCSim is reachable
 
 ```
-PlcSimGetState(instanceName="PLC_1_Sim")
+GetInstanceState(instanceName="PLC_1_Sim")
 ```
-Expected: `operatingState: "Run"`. If state is "Stop", the instance is ready for download (CPU will go to RUN after download).
+Expected: `operatingState: "Run"` or `"Stop"` — either is fine; CPU goes to RUN after download.
 
 > **If the instance IP doesn't match the TIA Portal device IP**, update the device:
 > ```
@@ -295,8 +303,9 @@ Expected: `{ "Success": true }`
 | `AddDevice` fails with "typeIdentifier not found" | Incorrect order number or firmware suffix | Use exact string from `GetHardwareCatalog` result |
 | `GenerateBlocksFromSource` fails | SCL syntax error in source content | Fix the SCL and call `SetExternalSourceContent` again before retrying |
 | `CompileSoftware` returns errors | Logic or type errors in generated blocks | Follow `/debug-compile` skill |
-| `PlcSimCreateInstance` fails | PLCSim Advanced not installed or already running | Check PLCSim installation; stop any existing instance first |
-| `ConfigOnlineAccess` cannot find adapter | PLCSim not started, or real NIC name wrong | Start PLCSim first (Step 7), or check NIC name in Windows Device Manager |
+| `CreateInstance` fails | PLCSim Advanced not installed or instance name conflict | Check PLCSim Advanced installation; call `GetInstances()` first |
+| `SetManagerConfig` not called before `CreateInstance` | Instance created in Softbus mode — TIA Portal cannot reach it via TCP/IP | `DeleteInstance` and recreate after calling `SetManagerConfig(networkMode="TCPIPSingleAdapter")` |
+| `ConfigOnlineAccess` cannot find adapter | PLCSim not started, or real NIC name wrong | Start PLCSim first (Step 8), or check NIC name in Windows Device Manager |
 | `DownloadSoftware` fails with "PLC not reachable" | IP mismatch or PLC not in STOP mode | Verify `ipAddress` matches PLC configuration; put PLC in STOP mode via TIA Portal |
 | `S7Connect` fails | Wrong IP or CPU type | Confirm IP address and CPU model string; check firewall rules |
 | `S7ReadVariable` returns unexpected type error | Address or dataType mismatch | Verify the DB structure and use the correct `dataType` parameter |

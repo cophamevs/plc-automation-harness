@@ -121,18 +121,29 @@ S7Disconnect()
 
 ---
 
-## PLCSim Advance (Virtual PLC)
+## PLCSim Advanced (Virtual PLC) — via plcsimadv-mcp
 
-For testing without physical hardware:
+For testing without physical hardware. PLCSim Advanced is managed by the
+**separate `plcsimadv-mcp` server** (not tiaportal-mcp):
 
 ```
-PlcSimCreateInstance(instanceName="PLC_1", cpuType="1500", ipAddress="192.168.0.1")
-PlcSimStart(instanceName="PLC_1")
-ConfigOnlineAccess(softwarePath="PLC_1/PLC_1")  → auto-detects PLCSim adapter
-DownloadSoftware(softwarePath="PLC_1/PLC_1")
-// ... test with S7Connect/S7ReadVariable ...
-PlcSimStop(instanceName="PLC_1")
-PlcSimDeleteInstance(instanceName="PLC_1")
+// Must set TCP/IP mode before creating instance (for TIA Portal download)
+SetManagerConfig(networkMode="TCPIPSingleAdapter")   // plcsimadv-mcp
+
+CreateInstance(instanceName="PLC_1", cpuType="1500", ipAddress="192.168.0.1")  // plcsimadv-mcp
+StartInstance(instanceName="PLC_1")                  // plcsimadv-mcp
+GetInstanceState(instanceName="PLC_1")               // confirm state == "Run"
+
+ConfigOnlineAccess(softwarePath="PLC_1/PLC_1")       // tiaportal-mcp → auto-detects PLCSim adapter
+DownloadSoftware(softwarePath="PLC_1/PLC_1")         // tiaportal-mcp
+
+// Test via S7.Net (tiaportal-mcp) or symbolic tags (plcsimadv-mcp):
+UpdateTagList(instanceName="PLC_1")                  // plcsimadv-mcp — refresh after download
+ReadTag(instanceName="PLC_1", tagName="Motor1.Speed") // plcsimadv-mcp
+
+// Cleanup
+StopInstance(instanceName="PLC_1")                   // plcsimadv-mcp
+DeleteInstance(instanceName="PLC_1")                 // plcsimadv-mcp
 ```
 
 ---

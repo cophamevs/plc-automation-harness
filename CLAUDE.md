@@ -48,10 +48,25 @@ Use `/scl-inject` skill for the full guided workflow.
 **Online/Download (5):** GetOnlineState, GoOnline, GoOffline, CompareToOnline,
   DownloadSoftware
 **Network (3):** ConfigOnlineAccess, DetectPlcSimAdapter, ValidateEndToEndReady
-**PLCSim (6):** PlcSimCreateInstance, PlcSimStart, PlcSimStop,
-  PlcSimDeleteInstance, PlcSimGetInstances, PlcSimGetState
 **S7 Runtime (10):** S7Connect, S7Disconnect, S7GetConnectionState, S7ReadVariable,
   S7ReadVariables, S7WriteVariable, S7ReadDB, S7WriteDB, S7ReadCpuInfo, S7ReadDBStruct
+
+## PLCSim Advanced — plcsimadv-mcp (separate server)
+
+Simulation is managed by the **`plcsimadv-mcp`** MCP server, independent of tiaportal-mcp.
+
+**Setup:** `SetManagerConfig(networkMode="TCPIPSingleAdapter")` — call BEFORE `CreateInstance` for TCP/IP connectivity.
+
+**Instance Lifecycle (4):** CreateInstance, StartInstance, StopInstance, DeleteInstance
+**Instance Query (2):** GetInstances, GetInstanceState
+**Instance Config (3):** GetControllerInfo, SetIPSuite, MemoryReset
+**Cycle Control (4):** GetCycleInfo, SetOperatingMode, RunToNextSyncPoint, SetCycleTime
+**Storage/Snapshot (3):** ArchiveStorage, RetrieveStorage, CleanupStorage
+**Tag I/O (4):** ReadTag, ReadTags, WriteTag, WriteTags — symbolic access (requires downloaded program)
+**Tag List (2):** UpdateTagList, GetTagList — refresh after each download
+**Address I/O (6):** ReadBit, ReadByte, ReadBytes, WriteBit, WriteByte, WriteBytes — direct memory (no program needed)
+**Virtual Time (4):** GetVirtualTime, SetVirtualTime, GetScaleFactor, SetScaleFactor
+**Manager (3):** GetManagerInfo, SetManagerConfig, GetRegisteredInstances
 
 ## Skills (invoke with /skill-name)
 - `/new-project` — Create project from scratch, add device, SCL, compile, simulate
